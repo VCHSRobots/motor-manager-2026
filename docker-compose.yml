@@ -1,25 +1,11 @@
 version: '3.8'
 
 services:
-  # Nginx reverse proxy
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx-motors.conf:/etc/nginx/conf.d/motors.conf
-      - ./nginx-lamp.conf:/etc/nginx/conf.d/lamp.conf
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - fastapi
-    restart: unless-stopped
-
   # FastAPI motor dynamometer app
-  fastapi:
+  app:
     build: .
     ports:
-      - "8000:8000"
+      - "80:8000"  # Map host port 80 to container port 8000
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - SHARED_PASSWORD=${SHARED_PASSWORD}
@@ -28,7 +14,7 @@ services:
     restart: unless-stopped
     command: python run_server.py
 
-  # PostgreSQL database (optional - can use external)
+  # PostgreSQL database (optional - can use external like Supabase)
   postgres:
     image: postgres:15
     environment:
@@ -40,6 +26,8 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+    profiles:  # Only start with --profile postgres
+      - postgres
 
 volumes:
   postgres_data:

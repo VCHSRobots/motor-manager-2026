@@ -97,7 +97,7 @@ Responsibilities:
    - App Platform will build and deploy automatically
    - Your app will be available at the generated URL
 
-### Option 2: DigitalOcean Droplet
+### Option 2: DigitalOcean Droplet (Dedicated)
 
 1. **Create Droplet**:
    - Ubuntu 22.04, 1GB RAM minimum
@@ -105,16 +105,42 @@ Responsibilities:
 
 2. **Deploy**:
    ```bash
+   # Clone the repository
    git clone https://github.com/VCHSRobots/motor-manager-2026.git
    cd motor-manager-2026
+   
+   # Configure environment
    cp .env.example .env
-   # Edit .env with your values
-   docker build -t motor-dynamo .
-   docker run -p 80:8000 --env-file .env motor-dynamo
+   nano .env  # Add DATABASE_URL and SHARED_PASSWORD
+   
+   # Start the application
+   sudo docker-compose up -d app
+   
+   # If using local Postgres
+   sudo docker-compose --profile postgres up -d postgres
    ```
 
-3. **Database**:
-   - Use DigitalOcean Managed Database or install Postgres on the droplet
+3. **Database Setup**:
+   - For external database (recommended): Use Supabase, Neon, or DigitalOcean Managed Database
+   - For local Postgres: Run `sudo docker-compose run --rm app python scripts/setup_db.py`
+
+4. **Domain Setup**:
+   - Point `motors.epicteam.org` to your Droplet's IP address
+   - The app runs on port 80, so no additional port configuration needed
+
+### SSL Setup (Recommended)
+
+```bash
+# Install Certbot
+sudo apt update
+sudo apt install certbot python3-certbot-nginx -y
+
+# Note: Since we're not using Nginx, use standalone mode
+sudo certbot certonly --standalone -d motors.epicteam.org
+
+# The certificates will be in /etc/letsencrypt/live/motors.epicteam.org/
+# You'll need to modify the FastAPI app to serve HTTPS (advanced)
+```
 
 ### Environment Variables
 

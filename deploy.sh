@@ -1,58 +1,39 @@
 #!/bin/bash
 
-# Deployment script for Motor Manager 2026
-# Run this on your DigitalOcean droplet
+# Update deployment script for Motor Manager 2026
+# Run this on your DigitalOcean droplet when updating to a new version
+# WARNING: This will delete all existing data!
 
 set -e  # Exit on any error
 
-echo "🚀 Starting deployment..."
-
-# Update system
-echo "📦 Updating system packages..."
-sudo apt-get update
-sudo apt-get upgrade -y
-
-# Install Docker if not already installed
-if ! command -v docker &> /dev/null; then
-    echo "🐳 Installing Docker..."
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
-    sudo usermod -aG docker $USER
-    rm get-docker.sh
-fi
-
-# Install Docker Compose if not already installed
-if ! command -v docker-compose &> /dev/null; then
-    echo "🐳 Installing Docker Compose..."
-    sudo apt-get install -y docker-compose
+echo "🚀 Starting deployment update..."
+echo "⚠️  WARNING: This will delete all existing motor data!"
+echo ""
+read -p "Continue? (yes/no): " confirm
+if [ "$confirm" != "yes" ]; then
+    echo "Deployment cancelled."
+    exit 1
 fi
 
 # Pull latest code
-echo "📥 Pulling latest code..."
+echo "📥 Pulling latest code from GitHub..."
 git pull origin main
 
-# Create .env file if it doesn't exist
-if [ ! -f .env ]; then
-    echo "⚙️ Creating .env file..."
-    cp .env.example .env
-    echo ""
-    echo "⚠️  IMPORTANT: Edit .env file with your secure passwords:"
-    echo "   nano .env"
-    echo ""
-    read -p "Press Enter after you've edited the .env file..."
-fi
+# Stop and remove existing containers and volumes
+echo "🛑 Stopping existing services..."
+docker-compose down -v
 
-# Build and start containers
+# Build new images
 echo "🏗️ Building Docker images..."
-docker-compose build
+docker-compose build --no-cache
 
+# Start services with fresh database
 echo "🚀 Starting services..."
-docker-compose down
 docker-compose up -d
 
 # Wait for database to be ready
-echo "⏳ Waiting for database to be ready..."
-sleep 10
+echo "⏳ Waiting for database to initialize..."
+sleep 15
 
 # Run migrations
 echo "🔄 Running database migrations..."
@@ -65,13 +46,15 @@ echo ""
 echo "📊 Service status:"
 docker-compose ps
 echo ""
-echo "🌐 Your application should be available at:"
+echo "🌐 Your application is available at:"
 echo "   http://$(curl -s ifconfig.me)"
+echo ""
+echo "🔑 Login credentials:"
+echo "   Username: admin"
+echo "   Password: (from your .env file ADMIN_PASSWORD)"
 echo ""
 echo "📝 Useful commands:"
 echo "   View logs:        docker-compose logs -f"
 echo "   Restart:          docker-compose restart"
-echo "   Stop:             docker-compose down"
-echo "   Start:            docker-compose up -d"
 echo "   Enter container:  docker-compose exec app bash"
 echo ""

@@ -1,46 +1,35 @@
-# Quick Deployment Commands for DigitalOcean Droplet
+# Quick Update Deployment for DigitalOcean Droplet
 
-## Step 1: SSH into your droplet
+## Updating Existing Installation (Fresh Start - No Data Preserved)
+
+### Step 1: SSH into your droplet
 ```bash
 ssh root@YOUR_DROPLET_IP
 ```
 
-## Step 2: Clone the repository
+### Step 2: Navigate to the project directory
 ```bash
-apt-get update
-apt-get install -y git
-git clone https://github.com/VCHSRobots/motor-manager-2026.git
 cd motor-manager-2026
 ```
 
-## Step 3: Configure environment variables
+### Step 3: Run the update deployment
 ```bash
-cp .env.example .env
-nano .env
-```
-
-**Edit these values in .env:**
-```
-DATABASE_URL=postgresql://motor_user:YOUR_STRONG_DB_PASSWORD@postgres:5432/dynamometer_db
-ADMIN_PASSWORD=your_strong_admin_password
-USER_PASSWORD=your_strong_user_password
-POSTGRES_PASSWORD=YOUR_STRONG_DB_PASSWORD
-```
-
-Press `Ctrl+X`, then `Y`, then `Enter` to save.
-
-## Step 4: Run the deployment script
-```bash
-chmod +x deploy.sh
 ./deploy.sh
 ```
 
-## Step 5: Access your application
+When prompted, type `yes` to confirm. This will:
+- Pull the latest code from GitHub
+- Stop existing containers
+- **Delete all existing data** (motors, logs, performance tests)
+- Build fresh Docker images
+- Start services with a clean database
+
+### Step 4: Access your application
 Open in browser: `http://YOUR_DROPLET_IP`
 
 Login with:
 - Username: `admin`
-- Password: (the ADMIN_PASSWORD from .env)
+- Password: (the ADMIN_PASSWORD from your existing .env file)
 
 ---
 

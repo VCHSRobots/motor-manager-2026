@@ -1,33 +1,33 @@
-version: '3.8'
-
 services:
-  # FastAPI motor dynamometer app
   app:
     build: .
     ports:
-      - "80:8000"  # Map host port 80 to container port 8000
+      - "80:8000"          # host:container
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - SHARED_PASSWORD=${SHARED_PASSWORD}
-    volumes:
-      - .:/app
+      # Use the service name "postgres" as the DB host inside the docker network
+      DATABASE_URL: ${DATABASE_URL}
+      SHARED_PASSWORD: ${SHARED_PASSWORD}
+    depends_on:
+      - postgres
     restart: unless-stopped
     command: python run_server.py
+    # DEV ONLY (uncomment if you want live-editing on the droplet; not recommended for production)
+    # volumes:
+    #   - .:/app
 
-  # PostgreSQL database (optional - can use external like Supabase)
   postgres:
     image: postgres:15
     environment:
-      - POSTGRES_DB=dynamometer_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: dynamometer_db
+      POSTGRES_USER: motor_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     restart: unless-stopped
-    profiles:  # Only start with --profile postgres
-      - postgres
+    # SECURITY: don't expose Postgres to the internet or host; the app can still reach it internally
+    # If you truly need host access temporarily, use: "127.0.0.1:5432:5432"
+    # ports:
+    #   - "127.0.0.1:5432:5432"
 
 volumes:
   postgres_data:

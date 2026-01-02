@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motors - EPIC Robotz Motor Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffe4e9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .username {
+            font-weight: 500;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #fff;
+            color: #c44569;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #c44569;
+            margin-bottom: 1rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sort-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .sort-controls label {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .sort-controls select {
+            padding: 0.5rem;
+            border: 1px solid #ffb3c6;
+            border-radius: 5px;
+            background-color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ffcdd8;
+        }
+        
+        th {
+            background-color: #ffb3c6;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        tr {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        tr:hover {
+            background-color: #fff0f3;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-on-order { background-color: #ffeaa7; color: #6c5ce7; }
+        .status-available { background-color: #55efc4; color: #00b894; }
+        .status-in-service { background-color: #74b9ff; color: #0984e3; }
+        .status-retired { background-color: #dfe6e9; color: #636e72; }
+        .status-damaged { background-color: #ff7675; color: #d63031; }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #c44569;
+            font-size: 1.2rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>
+                <img src="/static/images/epic_logo.png" style="height: 40px; vertical-align: middle; margin-right: 10px;" alt="EPIC Robotz Logo">
+                EPIC Robotz Motor Management System
+            </h1>
+            <div class="user-info">
+                <span class="username" id="displayUsername"></span>
+                <button class="btn btn-secondary" id="setupBtn" style="display:none;" onclick="window.location.href='/manage-users'">Setup</button>
+                <button class="btn btn-primary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <div class="controls">
+                <h2>Motor Inventory</h2>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="sort-controls">
+                        <label>Sort by:</label>
+                        <select id="sortSelect" onchange="sortMotors()">
+                            <option value="motor_id">Motor ID</option>
+                            <option value="name">Name</option>
+                            <option value="date_of_purchase">Date of Purchase</option>
+                            <option value="status">Status</option>
+                            <option value="peak_power_20a">Peak Power (20A)</option>
+                            <option value="peak_power_30a">Peak Power (30A)</option>
+                            <option value="peak_power_40a">Peak Power (40A)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="addMotor()">+ Add Motor</button>
+                </div>
+            </div>
+            
+            <div id="motorsTable">
+                <div class="loading">Loading motors...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const authToken = localStorage.getItem('auth_token');
+        const username = localStorage.getItem('username');
+        const role = localStorage.getItem('role');
+        
+        if (!authToken) {
+            window.location.href = '/';
+        }
+        
+        document.getElementById('displayUsername').textContent = username || 'User';
+        
+        if (role === 'admin') {
+            document.getElementById('setupBtn').style.display = 'inline-block';
+        }
+        
+        let motors = [];
+        
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+        
+        async function loadMotors() {
+            try {
+                const response = await fetch('/motors', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.status === 401) {
+                    alert('Session expired. Please login again.');
+                    logout();
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load motors');
+                }
+                
+                motors = await response.json();
+                renderMotors();
+            } catch (error) {
+                console.error('Error loading motors:', error);
+                document.getElementById('motorsTable').innerHTML = 
+                    '<div class="empty-state">Error loading motors. Please try again.</div>';
+            }
+        }
+        
+        function renderMotors() {
+            const tableDiv = document.getElementById('motorsTable');
+            
+            if (motors.length === 0) {
+                tableDiv.innerHTML = `
+                    <div class="empty-state">
+                        <i>🔧</i>
+                        <p>No motors found. Add your first motor to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Motor ID</th>
+                            <th>Type</th>
+                            <th>Nickname</th>
+                            <th>Date of Purchase</th>
+                            <th>Status</th>
+                            <th>Peak Power (20A)</th>
+                            <th>Peak Power (30A)</th>
+                            <th>Peak Power (40A)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            motors.forEach(motor => {
+                const statusClass = motor.status ? 'status-' + motor.status.toLowerCase().replace(' ', '-') : '';
+                const purchaseDate = formatPurchaseDate(motor);
+                const nickname = motor.name ? `<em style="color: #888;">${motor.name}</em>` : '-';
+                
+                html += `
+                    <tr onclick="viewMotor('${motor.id}')">
+                        <td><strong>${motor.motor_id || 'Pending'}</strong></td>
+                        <td><strong>${motor.motor_type || '-'}</strong></td>
+                        <td>${nickname}</td>
+                        <td>${purchaseDate}</td>
+                        <td><span class="status-badge ${statusClass}">${motor.status}</span></td>
+                        <td>${motor.peak_power_20a ? motor.peak_power_20a.toFixed(1) + 'W' : '-'}</td>
+                        <td>${motor.peak_power_30a ? motor.peak_power_30a.toFixed(1) + 'W' : '-'}</td>
+                        <td>${motor.peak_power_40a ? motor.peak_power_40a.toFixed(1) + 'W' : '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            tableDiv.innerHTML = html;
+        }
+        
+        function formatPurchaseDate(motor) {
+            if (motor.date_of_purchase) {
+                return new Date(motor.date_of_purchase).toLocaleDateString();
+            } else if (motor.purchase_season && motor.purchase_year) {
+                return `${motor.purchase_season} ${motor.purchase_year}`;
+            }
+            return '-';
+        }
+        
+        function sortMotors() {
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            motors.sort((a, b) => {
+                let aVal = a[sortBy];
+                let bVal = b[sortBy];
+                
+                // Handle null values
+                if (aVal === null || aVal === undefined) return 1;
+                if (bVal === null || bVal === undefined) return -1;
+                
+                // Sort strings alphabetically
+                if (typeof aVal === 'string') {
+                    return aVal.localeCompare(bVal);
+                }
+                
+                // Sort numbers
+                return aVal - bVal;
+            });
+            
+            renderMotors();
+        }
+        
+        function viewMotor(motorId) {
+            window.location.href = `/motor/${motorId}`;
+        }
+        
+        function addMotor() {
+            window.location.href = '/motor/new';
+        }
+        
+        // Load motors on page load
+        loadMotors();
+    </script>
+</body>
+</html>

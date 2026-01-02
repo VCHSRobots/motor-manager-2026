@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management - Motor Dynamometer</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0;
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #ddd;
+        }
+        th { 
+            background: #4CAF50; 
+            color: white;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-secondary { background: #666; color: white; }
+        .btn:hover { opacity: 0.8; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .protected-badge {
+            background: #ff9800;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .role-admin { background: #2196F3; color: white; }
+        .role-user { background: #9E9E9E; color: white; }
+        .error { color: #f44336; margin: 10px 0; }
+        .success { color: #4CAF50; margin: 10px 0; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+        }
+        .nav-link {
+            display: inline-block;
+            margin-right: 15px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .nav-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/docs" class="nav-link">API Docs</a>
+            <a href="/motors-page" class="nav-link">Motors</a>
+            <a href="/manage-users" class="nav-link">Users</a>
+            <a href="#" onclick="logout()" class="nav-link">Logout</a>
+        </nav>
+        
+        <h1>
+            <img src="/static/images/epic_logo.png" style="height: 50px; vertical-align: middle; margin-right: 10px;" alt="EPIC Robotz Logo">
+            User Management
+        </h1>
+        <p>Manage system users and permissions</p>
+        
+        <div id="message"></div>
+        
+        <button class="btn btn-primary" onclick="showAddUserModal()">Add New User</button>
+        
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userList">
+                <tr><td colspan="5">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New User</h2>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label>Role:</label>
+                    <select id="newRole" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Create User</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '';
+        let authToken = localStorage.getItem('auth_token');
+        
+        if (!authToken) {
+            alert('Please login first');
+            window.location.href = '/login-page';
+        }
+        
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/login-page';
+        }
+        
+        function showMessage(msg, isError = false) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${msg}</div>`;
+            setTimeout(() => msgDiv.innerHTML = '', 5000);
+        }
+        
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showMessage('Access denied. Admin privileges required.', true);
+                        return;
+                    }
+                    throw new Error('Failed to load users');
+                }
+                
+                const users = await response.json();
+                const tbody = document.getElementById('userList');
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td><span class="role-badge role-${user.role}">${user.role.toUpperCase()}</span></td>
+                        <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                        <td>${user.protected ? '<span class="protected-badge">PROTECTED</span>' : ''}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" 
+                                    onclick="deleteUser('${user.id}')" 
+                                    ${user.protected ? 'disabled' : ''}>
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showMessage('Error loading users: ' + error.message, true);
+            }
+        }
+        
+        function showAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+            document.getElementById('addUserForm').reset();
+        }
+        
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('newUsername').value;
+            const role = document.getElementById('newRole').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, role })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to create user');
+                }
+                
+                showMessage('User created successfully');
+                closeModal();
+                loadUsers();
+            } catch (error) {
+                showMessage('Error creating user: ' + error.message, true);
+            }
+        });
+        
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to delete user');
+                }
+                
+                showMessage('User deleted successfully');
+                loadUsers();
+            } catch (error) {
+                showMessage('Error deleting user: ' + error.message, true);
+            }
+        }
+        
+        // Load users on page load
+        loadUsers();
+    </script>
+</body>
+</html>

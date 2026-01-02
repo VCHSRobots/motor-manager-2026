@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPIC Robotz Motor Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffe4e9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .landing-container {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(196, 69, 105, 0.2);
+        }
+        
+        h1 {
+            color: #c44569;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .description {
+            text-align: left;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .description h2 {
+            color: #c44569;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .description p {
+            margin-bottom: 1rem;
+        }
+        
+        .owner-info {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .owner-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(196, 69, 105, 0.3);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(196, 69, 105, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <h1>
+            <img src="/static/images/epic_logo.png" style="height: 60px; vertical-align: middle; margin-right: 15px;" alt="EPIC Robotz Logo">
+            EPIC Robotz
+        </h1>
+        <div class="subtitle">Motor Management System</div>
+        
+        <div class="description">
+            <h2>About This System</h2>
+            <p>
+                Welcome to the EPIC Robotz Motor Management System. This platform helps our team 
+                track, test, and manage all motors used in our robotics competitions.
+            </p>
+            <p>
+                Key features include:
+            </p>
+            <ul style="margin-left: 2rem;">
+                <li>Complete motor inventory tracking</li>
+                <li>Performance test data storage and analysis</li>
+                <li>Motor status and lifecycle management</li>
+                <li>Historical performance tracking</li>
+            </ul>
+        </div>
+        
+        <div class="owner-info">
+            <h3>Owner</h3>
+            <p>EPIC Robotz Team</p>
+            <p>FRC Team 4415 - Valley Christian High School</p>
+            <p>Cerritos, California</p>
+        </div>
+        
+        <button class="btn-login" onclick="goToLogin()">Login to System</button>
+    </div>
+    
+    <script>
+        // Check if already logged in
+        const authToken = localStorage.getItem('auth_token');
+        if (authToken) {
+            window.location.href = '/motors-page';
+        }
+        
+        function goToLogin() {
+            window.location.href = '/login-page';
+        }
+    </script>
+</body>
+</html>

@@ -5,8 +5,8 @@ import uuid
 
 
 class MotorCreate(BaseModel):
-    name: Optional[str] = None
-    motor_type: str
+    name: str
+    motor_type: Optional[str] = None
     date_of_purchase: Optional[date] = None
     purchase_season: Optional[str] = None
     purchase_year: Optional[int] = None
@@ -30,7 +30,7 @@ class MotorUpdate(BaseModel):
 class Motor(BaseModel):
     id: uuid.UUID
     motor_id: Optional[str] = None
-    name: Optional[str] = None
+    name: str
     motor_type: Optional[str] = None
     date_of_purchase: Optional[date] = None
     purchase_season: Optional[str] = None

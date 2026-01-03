@@ -1,63 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>User Management - Motor Dynamometer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - EPIC Robotz Motor Management System</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body { 
-            font-family: Arial, sans-serif; 
-            margin: 40px;
-            background: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffe4e9;
+            color: #333;
+            line-height: 1.6;
         }
-        .container { 
-            max-width: 1000px; 
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        h1 { color: #333; }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-title img {
+            height: 50px;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .username {
+            font-weight: 500;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #c44569;
+            margin-bottom: 1rem;
+        }
+        
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            margin: 20px 0;
+            margin-top: 1rem;
         }
         th, td { 
-            padding: 12px; 
+            padding: 0.75rem; 
             text-align: left; 
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #ffcdd8;
         }
         th { 
-            background: #4CAF50; 
-            color: white;
+            background-color: #ffb3c6;
+            color: #333;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #fff5f7;
         }
         .btn {
-            padding: 8px 16px;
-            margin: 5px;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
-        .btn-primary { background: #4CAF50; color: white; }
-        .btn-danger { background: #f44336; color: white; }
-        .btn-secondary { background: #666; color: white; }
-        .btn:hover { opacity: 0.8; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { 
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white; 
+        }
+        .btn-danger { 
+            background: #f44336; 
+            color: white; 
+        }
+        .btn-secondary { 
+            background-color: #fff;
+            color: #c44569;
+            border: 1px solid #c44569;
+        }
+        .btn:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            transform: none;
+        }
         .form-group {
             margin: 15px 0;
         }
         label {
             display: block;
             margin-bottom: 5px;
-            font-weight: bold;
+            font-weight: 600;
+            color: #555;
         }
         input, select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 0.5rem;
+            border: 1px solid #ffb3c6;
+            border-radius: 5px;
             box-sizing: border-box;
+            background-color: white;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #c44569;
+            box-shadow: 0 0 0 3px rgba(196, 69, 105, 0.1);
         }
         .protected-badge {
             background: #ff9800;
@@ -73,53 +163,76 @@
         }
         .role-admin { background: #2196F3; color: white; }
         .role-user { background: #9E9E9E; color: white; }
-        .error { color: #f44336; margin: 10px 0; }
-        .success { color: #4CAF50; margin: 10px 0; }
+        .error { 
+            color: #f44336; 
+            margin: 10px 0;
+            padding: 0.75rem;
+            background: #ffebee;
+            border-radius: 5px;
+            border-left: 4px solid #f44336;
+        }
+        .success { 
+            color: #4CAF50; 
+            margin: 10px 0;
+            padding: 0.75rem;
+            background: #e8f5e9;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
         }
         .modal-content {
             background: white;
             margin: 10% auto;
-            padding: 30px;
-            border-radius: 8px;
+            padding: 2rem;
+            border-radius: 10px;
             width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
-        .nav-link {
-            display: inline-block;
-            margin-right: 15px;
-            color: #4CAF50;
-            text-decoration: none;
+        .modal-content h2 {
+            color: #c44569;
+            margin-bottom: 1.5rem;
         }
-        .nav-link:hover { text-decoration: underline; }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <img src="/static/images/epic_logo.png" alt="EPIC Robotz Logo">
+                <h1>User Management</h1>
+            </div>
+            <div class="user-info">
+                <span class="username" id="currentUser"></span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
-        <nav>
-            <a href="/" class="nav-link">Home</a>
-            <a href="/docs" class="nav-link">API Docs</a>
-            <a href="/motors-page" class="nav-link">Motors</a>
-            <a href="/manage-users" class="nav-link">Users</a>
-            <a href="#" onclick="logout()" class="nav-link">Logout</a>
-        </nav>
-        
-        <h1>
-            <img src="/static/images/epic_logo.png" style="height: 50px; vertical-align: middle; margin-right: 10px;" alt="EPIC Robotz Logo">
-            User Management
-        </h1>
+        <div class="card">
         <p>Manage system users and permissions</p>
         
         <div id="message"></div>
         
-        <button class="btn btn-primary" onclick="showAddUserModal()">Add New User</button>
+        <div class="actions">
+            <h2>System Users</h2>
+            <button class="btn btn-primary" onclick="showAddUserModal()">Add New User</button>
+        </div>
         
         <table id="userTable">
             <thead>
@@ -135,6 +248,13 @@
                 <tr><td colspan="5">Loading...</td></tr>
             </tbody>
         </table>
+        </div>
+        
+        <div class="card" style="margin-top: 1.5rem; text-align: center;">
+            <a href="/" style="color: #c44569; text-decoration: none; font-weight: 500;">← Back to Home</a>
+            <span style="margin: 0 1rem; color: #ccc;">|</span>
+            <a href="/motors-page" style="color: #c44569; text-decoration: none; font-weight: 500;">View Motors</a>
+        </div>
     </div>
     
     <!-- Add User Modal -->
@@ -167,6 +287,11 @@
             alert('Please login first');
             window.location.href = '/login-page';
         }
+        
+        // Display current username
+        const currentUsername = localStorage.getItem('username') || 'User';
+        const currentRole = localStorage.getItem('role') || '';
+        document.getElementById('currentUser').textContent = `${currentUsername} (${currentRole})`;
         
         function logout() {
             localStorage.removeItem('auth_token');

@@ -6,7 +6,9 @@ services:
     environment:
       # Use the service name "postgres" as the DB host inside the docker network
       DATABASE_URL: ${DATABASE_URL}
-      SHARED_PASSWORD: ${SHARED_PASSWORD}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      USER_PASSWORD: ${USER_PASSWORD}
+      DEFAULT_ADMIN_USERNAME: ${DEFAULT_ADMIN_USERNAME:-admin}
     depends_on:
       - postgres
     restart: unless-stopped

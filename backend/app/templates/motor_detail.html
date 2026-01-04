@@ -263,6 +263,7 @@
         <div id="motorContent" class="loading">Loading motor details...</div>
     </div>
     
+    <script src="/static/js/auth-utils.js"></script>
     <script>
         const authToken = localStorage.getItem('auth_token');
         const username = localStorage.getItem('username');
@@ -280,13 +281,6 @@
             document.getElementById('setupBtn').style.display = 'inline-block';
         }
         
-        function logout() {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('username');
-            localStorage.removeItem('role');
-            window.location.href = '/';
-        }
-        
         async function loadMotor() {
             if (isNewMotor) {
                 renderNewMotorForm();
@@ -294,11 +288,7 @@
             }
             
             try {
-                const response = await fetch(`/motors/${motorId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await authFetch(`/motors/${motorId}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to load motor');
@@ -557,10 +547,9 @@
             console.log('Sending motor data:', data);
             
             try {
-                const response = await fetch('/motors', {
+                const response = await authFetch('/motors', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${authToken}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data)
@@ -577,10 +566,9 @@
                 // If there's an initial comment, create a log entry
                 if (initialComment && initialComment.trim()) {
                     try {
-                        await fetch(`/motors/${motor.id}/logs`, {
+                        await authFetch(`/motors/${motor.id}/logs`, {
                             method: 'POST',
                             headers: {
-                                'Authorization': `Bearer ${authToken}`,
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({ entry_text: initialComment.trim() })
@@ -600,11 +588,7 @@
         
         async function loadLogEntries() {
             try {
-                const response = await fetch(`/motors/${motorId}/logs`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await authFetch(`/motors/${motorId}/logs`);
                 
                 if (response.ok) {
                     const logs = await response.json();
@@ -632,10 +616,9 @@
             if (!text) return;
             
             try {
-                const response = await fetch(`/motors/${motorId}/logs`, {
+                const response = await authFetch(`/motors/${motorId}/logs`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${authToken}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ entry_text: text })
@@ -717,11 +700,8 @@
             }
             
             try {
-                const response = await fetch(`/motors/${motorId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
+                const response = await authFetch(`/motors/${motorId}`, {
+                    method: 'DELETE'
                 });
                 
                 if (response.ok) {
@@ -745,11 +725,8 @@
             const formData = new FormData();
             formData.append('file', file);
             
-            fetch(`/motors/${motorId}/upload-picture`, {
+            authFetch(`/motors/${motorId}/upload-picture`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
                 body: formData
             })
             .then(response => {

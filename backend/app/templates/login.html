@@ -214,13 +214,9 @@
                 
                 showMessage('Login successful! Redirecting...');
                 
-                // Redirect based on role
+                // Redirect to Motor Inventory Page
                 setTimeout(() => {
-                    if (data.role === 'admin') {
-                        window.location.href = '/manage-users';
-                    } else {
-                        window.location.href = '/';
-                    }
+                    window.location.href = '/motors-page';
                 }, 1000);
                 
             } catch (error) {
@@ -232,7 +228,7 @@
         if (localStorage.getItem('auth_token')) {
             showMessage('Already logged in. Redirecting...');
             setTimeout(() => {
-                window.location.href = '/';
+                window.location.href = '/motors-page';
             }, 1000);
         }
     </script>

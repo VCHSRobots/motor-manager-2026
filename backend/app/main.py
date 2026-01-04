@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from .database import get_db
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 import backend.app.routers.auth as auth_module
 import backend.app.routers.motors as motors_module
 import backend.app.routers.users as users_module
@@ -52,6 +53,17 @@ init_default_admin()
 
 app = FastAPI(title="Motor Dynamometer API", version="1.0.0")
 
+# Middleware to add refreshed token to response headers
+class TokenRefreshMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        # Check if the request context has a new token (set by verify_token)
+        if hasattr(request.state, "new_token"):
+            response.headers["X-New-Token"] = request.state.new_token
+        return response
+
+app.add_middleware(TokenRefreshMiddleware)
+
 # CORS for web app
 app.add_middleware(
     CORSMiddleware,
@@ -59,6 +71,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-New-Token"],  # Allow frontend to read the new token header
 )
 
 app.include_router(auth_module.router, prefix="/auth", tags=["auth"])

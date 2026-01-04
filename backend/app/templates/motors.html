@@ -236,6 +236,7 @@
         </div>
     </div>
     
+    <script src="/static/js/auth-utils.js"></script>
     <script>
         const authToken = localStorage.getItem('auth_token');
         const username = localStorage.getItem('username');
@@ -253,26 +254,9 @@
         
         let motors = [];
         
-        function logout() {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('username');
-            localStorage.removeItem('role');
-            window.location.href = '/';
-        }
-        
         async function loadMotors() {
             try {
-                const response = await fetch('/motors', {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-                
-                if (response.status === 401) {
-                    alert('Session expired. Please login again.');
-                    logout();
-                    return;
-                }
+                const response = await authFetch('/motors');
                 
                 if (!response.ok) {
                     throw new Error('Failed to load motors');

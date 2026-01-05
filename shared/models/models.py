@@ -22,11 +22,10 @@ class Motor(Base):
     picture_path: Mapped[Optional[str]] = mapped_column(String(500))
     status: Mapped[str] = mapped_column(String(50), server_default="On Order", nullable=False)
     
-    # Peak power measurements (watts at different amps)
-    peak_power_10a: Mapped[Optional[float]] = mapped_column(Float)
-    peak_power_20a: Mapped[Optional[float]] = mapped_column(Float)
-    peak_power_30a: Mapped[Optional[float]] = mapped_column(Float)
-    peak_power_40a: Mapped[Optional[float]] = mapped_column(Float)
+    # Average power measurements (watts at different current limits)
+    avg_power_10a: Mapped[Optional[float]] = mapped_column(Float)
+    avg_power_20a: Mapped[Optional[float]] = mapped_column(Float)
+    avg_power_40a: Mapped[Optional[float]] = mapped_column(Float)
     
     created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now())
     updated_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
@@ -111,14 +110,14 @@ class PerformanceTest(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     motor_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("motors.id"), nullable=False)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    test_uuid: Mapped[Optional[str]] = mapped_column(String(36), unique=True, index=True)  # Client-generated UUID for deduplication
     test_date: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, nullable=False)
     data_file_path: Mapped[Optional[str]] = mapped_column(String(500))
     
-    # Peak power measurements from this test
-    peak_power_10a: Mapped[Optional[float]] = mapped_column(Float)
-    peak_power_20a: Mapped[Optional[float]] = mapped_column(Float)
-    peak_power_30a: Mapped[Optional[float]] = mapped_column(Float)
-    peak_power_40a: Mapped[Optional[float]] = mapped_column(Float)
+    # Average power measurements from this test
+    avg_power_10a: Mapped[Optional[float]] = mapped_column(Float)
+    avg_power_20a: Mapped[Optional[float]] = mapped_column(Float)
+    avg_power_40a: Mapped[Optional[float]] = mapped_column(Float)
     
     notes: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, server_default=func.now())

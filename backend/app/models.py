@@ -21,10 +21,9 @@ class MotorUpdate(BaseModel):
     purchase_year: Optional[int] = None
     picture_path: Optional[str] = None
     status: Optional[str] = None
-    peak_power_10a: Optional[float] = None
-    peak_power_20a: Optional[float] = None
-    peak_power_30a: Optional[float] = None
-    peak_power_40a: Optional[float] = None
+    avg_power_10a: Optional[float] = None
+    avg_power_20a: Optional[float] = None
+    avg_power_40a: Optional[float] = None
 
 
 class Motor(BaseModel):
@@ -37,10 +36,9 @@ class Motor(BaseModel):
     purchase_year: Optional[int] = None
     picture_path: Optional[str] = None
     status: str
-    peak_power_10a: Optional[float] = None
-    peak_power_20a: Optional[float] = None
-    peak_power_30a: Optional[float] = None
-    peak_power_40a: Optional[float] = None
+    avg_power_10a: Optional[float] = None
+    avg_power_20a: Optional[float] = None
+    avg_power_40a: Optional[float] = None
     created_at: datetime
     updated_at: datetime
 
@@ -74,6 +72,46 @@ class User(BaseModel):
     username: str
     role: str
     protected: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class TestDataPoint(BaseModel):
+    timestamp: float
+    voltage: float
+    bus_voltage: float
+    current: float
+    rpm: float
+    input_power: float
+    output_power: float
+
+
+class PerformanceTestCreate(BaseModel):
+    test_date: datetime
+    max_rpm: float
+    max_current: float
+    gear_ratio: float
+    flywheel_inertia: float
+    hardware_description: Optional[str] = None
+    avg_power_10a: Optional[float] = None
+    avg_power_20a: Optional[float] = None
+    avg_power_40a: Optional[float] = None
+    data_points: list[TestDataPoint]
+    notes: Optional[str] = None
+
+
+class PerformanceTest(BaseModel):
+    id: uuid.UUID
+    motor_id: uuid.UUID
+    user_id: uuid.UUID
+    test_date: datetime
+    data_file_path: Optional[str] = None
+    avg_power_10a: Optional[float] = None
+    avg_power_20a: Optional[float] = None
+    avg_power_40a: Optional[float] = None
+    notes: Optional[str] = None
     created_at: datetime
 
     class Config:

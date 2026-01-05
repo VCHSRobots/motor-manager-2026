@@ -2,12 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from ..database import get_db
 from .auth import verify_token, verify_admin_token
-from ..models import Motor, MotorCreate, MotorUpdate, MotorLog, MotorLogCreate
-from shared.models import Motor as DBMotor, MotorLog as DBMotorLog
+from ..models import Motor, MotorCreate, MotorUpdate, MotorLog, MotorLogCreate, PerformanceTestCreate, PerformanceTest
+from shared.models import Motor as DBMotor, MotorLog as DBMotorLog, PerformanceTest as DBPerformanceTest
 from datetime import datetime
 import uuid
 import os
 import shutil
+import json
+import gzip
 from pathlib import Path
 
 router = APIRouter()
@@ -143,3 +145,153 @@ async def upload_motor_picture(
     db.commit()
     
     return {"picture_path": db_motor.picture_path}
+
+
+@router.post("/{motor_id}/tests", response_model=PerformanceTest)
+def upload_test_data(
+    motor_id: str,
+    test_data: PerformanceTestCreate,
+    db: Session = Depends(get_db),
+    token_data: dict = Depends(verify_token)
+):
+    # Verify motor exists
+    db_motor = db.query(DBMotor).filter(DBMotor.motor_id == motor_id).first()
+    if not db_motor:
+        raise HTTPException(status_code=404, detail="Motor not found")
+    
+    # Check if test_uuid already exists (prevent duplicate uploads)
+    if test_data.test_uuid:
+        existing_test = db.query(DBPerformanceTest).filter(
+            DBPerformanceTest.test_uuid == test_data.test_uuid
+        ).first()
+        if existing_test:
+            raise HTTPException(
+                status_code=409, 
+                detail=f"Test with UUID {test_data.test_uuid} has already been uploaded"
+            )
+    
+    user_id = uuid.UUID(token_data['user_id'])
+    
+    # Create directory for test data if it doesn't exist
+    test_data_dir = Path("backend/app/static/uploads/test_data")
+    test_data_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate unique filename for the test data
+    test_id = uuid.uuid4()
+    data_filename = f"{motor_id}_{test_id}.json.gz"
+    data_file_path = test_data_dir / data_filename
+    
+    # Save test data as compressed JSON
+    test_data_json = {
+        "test_date": test_data.test_date.isoformat(),
+        "max_rpm": test_data.max_rpm,
+        "max_current": test_data.max_current,
+        "gear_ratio": test_data.gear_ratio,
+        "flywheel_inertia": test_data.flywheel_inertia,
+        "hardware_description": test_data.hardware_description,
+        "data_points": [
+            {
+                "timestamp": dp.timestamp,
+                "voltage": dp.voltage,
+                "bus_voltage": dp.bus_voltage,
+                "current": dp.current,
+                "rpm": dp.rpm,
+                "input_power": dp.input_power,
+                "output_power": dp.output_power
+            }
+            for dp in test_data.data_points
+        ]
+    }
+    
+    with gzip.open(data_file_path, 'wt', encoding='utf-8') as f:
+        json.dump(test_data_json, f)
+    
+    # Create database record
+    db_test = DBPerformanceTest(
+        id=test_id,
+        motor_id=db_motor.id,
+        user_id=user_id,
+        test_uuid=test_data.test_uuid,
+        test_date=test_data.test_date,
+        data_file_path=f"/static/uploads/test_data/{data_filename}",
+        avg_power_10a=test_data.avg_power_10a,
+        avg_power_20a=test_data.avg_power_20a,
+        avg_power_40a=test_data.avg_power_40a,
+        notes=test_data.notes
+    )
+    
+    db.add(db_test)
+    
+    # Update motor's average power values to latest test results
+    if test_data.avg_power_10a is not None:
+        db_motor.avg_power_10a = test_data.avg_power_10a
+    
+    if test_data.avg_power_20a is not None:
+        db_motor.avg_power_20a = test_data.avg_power_20a
+    
+    if test_data.avg_power_40a is not None:
+        db_motor.avg_power_40a = test_data.avg_power_40a
+    
+    db.commit()
+    db.refresh(db_test)
+    
+    return db_test
+
+
+@router.get("/{motor_id}/tests", response_model=list[PerformanceTest])
+def get_motor_tests(
+    motor_id: str,
+    db: Session = Depends(get_db),
+    token_data: dict = Depends(verify_token)
+):
+    # Get motor by motor_id string
+    db_motor = db.query(DBMotor).filter(DBMotor.motor_id == motor_id).first()
+    if not db_motor:
+        raise HTTPException(status_code=404, detail="Motor not found")
+    
+    tests = db.query(DBPerformanceTest).filter(
+        DBPerformanceTest.motor_id == db_motor.id
+    ).order_by(DBPerformanceTest.test_date.desc()).all()
+    
+    return tests
+
+
+@router.get("/{motor_id}/tests/{test_id}/data")
+def get_test_data(
+    motor_id: str,
+    test_id: str,
+    db: Session = Depends(get_db),
+    token_data: dict = Depends(verify_token)
+):
+    # Get motor by motor_id string
+    db_motor = db.query(DBMotor).filter(DBMotor.motor_id == motor_id).first()
+    if not db_motor:
+        raise HTTPException(status_code=404, detail="Motor not found")
+    
+    # Verify test exists and belongs to motor
+    db_test = db.query(DBPerformanceTest).filter(
+        DBPerformanceTest.id == uuid.UUID(test_id),
+        DBPerformanceTest.motor_id == db_motor.id
+    ).first()
+    
+    if not db_test:
+        raise HTTPException(status_code=404, detail="Test not found")
+    
+    # Read and decompress test data
+    if db_test.data_file_path:
+        data_file_path = Path("backend/app") / db_test.data_file_path.lstrip("/")
+        
+        if not data_file_path.exists():
+            raise HTTPException(status_code=404, detail="Test data file not found")
+        
+        with gzip.open(data_file_path, 'rt', encoding='utf-8') as f:
+            test_data = json.load(f)
+        
+        # Add avg_power values from database
+        test_data['avg_power_10a'] = db_test.avg_power_10a
+        test_data['avg_power_20a'] = db_test.avg_power_20a
+        test_data['avg_power_40a'] = db_test.avg_power_40a
+        
+        return test_data
+    else:
+        raise HTTPException(status_code=404, detail="No test data file associated with this test")

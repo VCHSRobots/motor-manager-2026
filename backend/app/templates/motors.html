@@ -221,9 +221,9 @@
                             <option value="name">Name</option>
                             <option value="date_of_purchase">Date of Purchase</option>
                             <option value="status">Status</option>
-                            <option value="peak_power_20a">Peak Power (20A)</option>
-                            <option value="peak_power_30a">Peak Power (30A)</option>
-                            <option value="peak_power_40a">Peak Power (40A)</option>
+                            <option value="avg_power_10a">Avg Power (10A)</option>
+                            <option value="avg_power_20a">Avg Power (20A)</option>
+                            <option value="avg_power_40a">Avg Power (40A)</option>
                         </select>
                     </div>
                     <button class="btn btn-success" onclick="addMotor()">+ Add Motor</button>
@@ -293,9 +293,9 @@
                             <th>Nickname</th>
                             <th>Date of Purchase</th>
                             <th>Status</th>
-                            <th>Peak Power (20A)</th>
-                            <th>Peak Power (30A)</th>
-                            <th>Peak Power (40A)</th>
+                            <th>Avg Power (10A)</th>
+                            <th>Avg Power (20A)</th>
+                            <th>Avg Power (40A)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -313,9 +313,9 @@
                         <td>${nickname}</td>
                         <td>${purchaseDate}</td>
                         <td><span class="status-badge ${statusClass}">${motor.status}</span></td>
-                        <td>${motor.peak_power_20a ? motor.peak_power_20a.toFixed(1) + 'W' : '-'}</td>
-                        <td>${motor.peak_power_30a ? motor.peak_power_30a.toFixed(1) + 'W' : '-'}</td>
-                        <td>${motor.peak_power_40a ? motor.peak_power_40a.toFixed(1) + 'W' : '-'}</td>
+                        <td>${motor.avg_power_10a ? motor.avg_power_10a.toFixed(1) + 'W' : '-'}</td>
+                        <td>${motor.avg_power_20a ? motor.avg_power_20a.toFixed(1) + 'W' : '-'}</td>
+                        <td>${motor.avg_power_40a ? motor.avg_power_40a.toFixed(1) + 'W' : '-'}</td>
                     </tr>
                 `;
             });

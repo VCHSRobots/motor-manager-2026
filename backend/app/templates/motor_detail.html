@@ -93,14 +93,14 @@
         
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 1rem auto;
             padding: 0 2rem;
         }
         
         .card {
             background: white;
             border-radius: 10px;
-            padding: 2rem;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
@@ -111,27 +111,27 @@
         }
         
         .key-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
         
         .metric-box {
             background: linear-gradient(135deg, #fff0f3 0%, #ffe4e9 100%);
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
             text-align: center;
+            min-width: 110px;
         }
         
         .metric-label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: #666;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
         
         .metric-value {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: #c44569;
         }
@@ -200,22 +200,48 @@
         }
         
         .motor-picture {
-            max-width: 400px;
-            max-height: 400px;
-            border-radius: 10px;
-            margin-top: 1rem;
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
         }
         
         .no-picture {
-            width: 400px;
-            height: 300px;
+            width: 200px;
+            height: 150px;
             background-color: #f5f5f5;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #999;
-            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .motor-header-layout {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 2rem;
+            align-items: start;
+        }
+        
+        .motor-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .motor-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+        
+        .motor-picture-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
         }
         
         .chart-container {
@@ -233,8 +259,9 @@
         .back-link {
             color: #c44569;
             text-decoration: none;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             display: inline-block;
+            font-size: 0.9rem;
         }
         
         .back-link:hover {
@@ -270,6 +297,7 @@
         const role = localStorage.getItem('role');
         const motorId = window.location.pathname.split('/').pop();
         const isNewMotor = motorId === 'new';
+        let motorIdString = null;  // Will store motor_id like "2026-001"
         
         if (!authToken) {
             window.location.href = '/';
@@ -295,6 +323,7 @@
                 }
                 
                 const motor = await response.json();
+                motorIdString = motor.motor_id;  // Store motor_id string for API calls
                 renderMotor(motor);
             } catch (error) {
                 console.error('Error loading motor:', error);
@@ -352,6 +381,7 @@
                                 <label>Date of Purchase</label>
                                 <select name="purchase_option" id="purchaseOptionSelect" onchange="toggleDateInput()">
                                     <option value="">Select Date</option>
+                                    <option value="unknown">Unknown</option>
                                     ${dateOptionsHtml}
                                     <option value="specific">Specific Date</option>
                                 </select>
@@ -421,55 +451,53 @@
             const content = document.getElementById('motorContent');
             content.innerHTML = `
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div>
-                            <h2 style="color: #c44569;">${motor.motor_id || 'Pending'} - ${motor.motor_type || 'N/A'}</h2>
-                            ${motor.name ? `<p style="color: #888; font-style: italic; margin-top: 0.3rem;">"${motor.name}"</p>` : ''}
-                            <p style="color: #666; margin-top: 0.5rem;">
-                                Purchased: ${purchaseDate}
-                            </p>
-                            <span class="status-badge ${statusClass}" style="margin-top: 1rem;">${motor.status}</span>
+                    <div class="motor-header-layout">
+                        <div class="motor-info-section">
+                            <div class="motor-top-row">
+                                <div>
+                                    <h2 style="color: #c44569; margin-bottom: 0.3rem;">${motor.motor_id || 'Pending'} - ${motor.motor_type || 'N/A'}</h2>
+                                    ${motor.name ? `<p style="color: #888; font-style: italic; margin: 0;">"${motor.name}"</p>` : ''}
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary btn-small" onclick="editMotor()">Edit</button>
+                                    ${role === 'admin' ? '<button class="btn btn-danger btn-small" onclick="deleteMotor()" style="margin-left: 0.5rem;">Delete</button>' : ''}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                                <span class="status-badge ${statusClass}">${motor.status}</span>
+                                <span style="color: #666; font-size: 0.9rem;">Purchased: ${purchaseDate}</span>
+                                <div class="key-metrics">
+                                    <div class="metric-box">
+                                        <div class="metric-label">@ 10A</div>
+                                        <div class="metric-value">${motor.avg_power_10a ? motor.avg_power_10a.toFixed(1) + 'W' : 'N/A'}</div>
+                                    </div>
+                                    <div class="metric-box">
+                                        <div class="metric-label">@ 20A</div>
+                                        <div class="metric-value">${motor.avg_power_20a ? motor.avg_power_20a.toFixed(1) + 'W' : 'N/A'}</div>
+                                    </div>
+                                    <div class="metric-box">
+                                        <div class="metric-label">@ 40A</div>
+                                        <div class="metric-value">${motor.avg_power_40a ? motor.avg_power_40a.toFixed(1) + 'W' : 'N/A'}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <button class="btn btn-primary" onclick="editMotor()">Edit Motor</button>
-                            ${role === 'admin' ? '<button class="btn btn-danger" onclick="deleteMotor()">Delete</button>' : ''}
-                        </div>
-                    </div>
-                    
-                    <div class="key-metrics">
-                        <div class="metric-box">
-                            <div class="metric-label">Peak Power @ 20A</div>
-                            <div class="metric-value">${motor.peak_power_20a ? motor.peak_power_20a.toFixed(1) + 'W' : 'N/A'}</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="metric-label">Peak Power @ 30A</div>
-                            <div class="metric-value">${motor.peak_power_30a ? motor.peak_power_30a.toFixed(1) + 'W' : 'N/A'}</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="metric-label">Peak Power @ 40A</div>
-                            <div class="metric-value">${motor.peak_power_40a ? motor.peak_power_40a.toFixed(1) + 'W' : 'N/A'}</div>
+                        <div class="motor-picture-section">
+                            ${motor.picture_path ? 
+                                `<img src="${motor.picture_path}" class="motor-picture" alt="${motor.name}">` : 
+                                '<div class="no-picture">No picture</div>'
+                            }
+                            <input type="file" id="pictureUpload" accept="image/*" style="display: none;" onchange="uploadPicture()">
+                            <button class="btn btn-primary btn-small" onclick="document.getElementById('pictureUpload').click()">Upload</button>
                         </div>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <h2>Motor Picture</h2>
-                    ${motor.picture_path ? 
-                        `<img src="${motor.picture_path}" class="motor-picture" alt="${motor.name}">` : 
-                        '<div class="no-picture">No picture uploaded</div>'
-                    }
-                    <div style="margin-top: 1rem;">
-                        <input type="file" id="pictureUpload" accept="image/*" style="display: none;" onchange="uploadPicture()">
-                        <button class="btn btn-primary" onclick="document.getElementById('pictureUpload').click()">Upload Picture</button>
+                    <h2>Performance Tests</h2>
+                    <div id="testsSection">
+                        <p style="color: #999;">Loading test data...</p>
                     </div>
-                </div>
-                
-                <div class="card">
-                    <h2>Latest Performance Test</h2>
-                    <div class="chart-container">
-                        <canvas id="performanceChart"></canvas>
-                    </div>
-                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="uploadPerformanceData()">Upload New Test Data</button>
                 </div>
                 
                 <div class="card">
@@ -483,7 +511,7 @@
             `;
             
             loadLogEntries();
-            loadPerformanceChart();
+            loadPerformanceTests();
         }
         
         function formatPurchaseDate(motor) {
@@ -634,29 +662,177 @@
             }
         }
         
-        function loadPerformanceChart() {
-            // This will be populated with actual data from the latest performance test
+        async function loadPerformanceTests() {
+            try {
+                const response = await authFetch(`/motors/${motorIdString}/tests`);
+                
+                if (!response.ok) {
+                    console.error('Failed to load tests:', response.status);
+                    document.getElementById('testsSection').innerHTML = 
+                        '<p style="color: #999;">No test data available yet.</p>';
+                    return;
+                }
+                
+                const tests = await response.json();
+                const testsSection = document.getElementById('testsSection');
+                
+                if (tests.length === 0) {
+                    testsSection.innerHTML = '<p style="color: #999;">No test data uploaded yet.</p>';
+                    return;
+                }
+                
+                // Display most recent test
+                const latestTest = tests[0];
+                
+                testsSection.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <label for="testSelect" style="font-weight: 600; margin: 0;">Test:</label>
+                        <select id="testSelect" onchange="loadTestData(this.value)" style="padding: 0.4rem 0.6rem; font-size: 0.9rem; flex: 1; max-width: 500px;">
+                            ${tests.map(test => `
+                                <option value="${test.id}">
+                                    ${new Date(test.test_date).toLocaleString()} - 
+                                    ${test.avg_power_10a ? test.avg_power_10a.toFixed(1) + 'W @10A' : ''}
+                                    ${test.avg_power_20a ? test.avg_power_20a.toFixed(1) + 'W @20A' : ''}
+                                    ${test.avg_power_40a ? test.avg_power_40a.toFixed(1) + 'W @40A' : ''}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    
+                    <div id="testMetadata" style="margin-bottom: 1rem;"></div>
+                    
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                `;
+                
+                // Load the latest test data by default
+                loadTestData(latestTest.id);
+                
+            } catch (error) {
+                console.error('Error loading tests:', error);
+                document.getElementById('testsSection').innerHTML = 
+                    '<p style="color: #f00;">Error loading test data.</p>';
+            }
+        }
+        
+        let currentChart = null;
+        
+        async function loadTestData(testId) {
+            try {
+                const response = await authFetch(`/motors/${motorIdString}/tests/${testId}/data`);
+                
+                if (!response.ok) {
+                    console.error('Failed to load test data:', response.status);
+                    return;
+                }
+                
+                const testData = await response.json();
+                
+                // Display metadata
+                const metadataDiv = document.getElementById('testMetadata');
+                metadataDiv.innerHTML = `
+                    <div style="background-color: #f9f9f9; padding: 0.75rem; border-radius: 6px; font-size: 0.9rem;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center;">
+                            <div>
+                                <strong>Date:</strong> ${new Date(testData.test_date).toLocaleString()}
+                            </div>
+                            <div>
+                                <strong>Max RPM:</strong> ${testData.max_rpm}
+                            </div>
+                            <div>
+                                <strong>Max Current:</strong> ${testData.max_current}A
+                            </div>
+                            <div>
+                                <strong>Gear:</strong> ${testData.gear_ratio}
+                            </div>
+                            <div>
+                                <strong>Inertia:</strong> ${testData.flywheel_inertia}
+                            </div>
+                            ${testData.avg_power_10a || testData.avg_power_20a || testData.avg_power_40a ? `
+                                <div style="border-left: 2px solid #c44569; padding-left: 1rem;">
+                                    <strong>Avg Power:</strong>
+                                    ${testData.avg_power_10a ? `<span style="margin-left: 0.5rem;">${testData.avg_power_10a.toFixed(1)}W@10A</span>` : ''}
+                                    ${testData.avg_power_20a ? `<span style="margin-left: 0.5rem;">${testData.avg_power_20a.toFixed(1)}W@20A</span>` : ''}
+                                    ${testData.avg_power_40a ? `<span style="margin-left: 0.5rem;">${testData.avg_power_40a.toFixed(1)}W@40A</span>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                        ${testData.hardware_description ? `
+                            <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #ddd;">
+                                <strong>Hardware:</strong> ${testData.hardware_description}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                // Plot the graph
+                plotTestData(testData.data_points);
+                
+            } catch (error) {
+                console.error('Error loading test data:', error);
+            }
+        }
+        
+        function plotTestData(dataPoints) {
             const ctx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(ctx, {
+            
+            // Destroy existing chart if it exists
+            if (currentChart) {
+                currentChart.destroy();
+            }
+            
+            // Extract data arrays
+            const timestamps = dataPoints.map(dp => dp.timestamp.toFixed(2));
+            const rpms = dataPoints.map(dp => dp.rpm);
+            const currents = dataPoints.map(dp => dp.current);
+            const voltages = dataPoints.map(dp => dp.voltage);
+            const busVoltages = dataPoints.map(dp => dp.bus_voltage);
+            const inputPowers = dataPoints.map(dp => dp.input_power);
+            const outputPowers = dataPoints.map(dp => dp.output_power);
+            
+            currentChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['0s', '10s', '20s', '30s', '40s', '50s', '60s'],
-                    datasets: [{
-                        label: 'Amps',
-                        data: [0, 10, 20, 30, 35, 38, 40],
-                        borderColor: '#ff6b9d',
-                        yAxisID: 'y',
-                    }, {
-                        label: 'RPM',
-                        data: [0, 2000, 4000, 5500, 6000, 6200, 6400],
-                        borderColor: '#c44569',
-                        yAxisID: 'y1',
-                    }, {
-                        label: 'Watts',
-                        data: [0, 500, 1200, 1800, 2100, 2300, 2500],
-                        borderColor: '#ffb3c6',
-                        yAxisID: 'y2',
-                    }]
+                    labels: timestamps,
+                    datasets: [
+                        {
+                            label: 'RPM',
+                            data: rpms,
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            yAxisID: 'y-rpm',
+                            tension: 0.3,
+                            pointRadius: 1
+                        },
+                        {
+                            label: 'Current (A)',
+                            data: currents,
+                            borderColor: '#ff6b9d',
+                            backgroundColor: 'rgba(255, 107, 157, 0.1)',
+                            yAxisID: 'y-current',
+                            tension: 0.3,
+                            pointRadius: 1
+                        },
+                        {
+                            label: 'Voltage (V)',
+                            data: voltages,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            yAxisID: 'y-voltage',
+                            tension: 0.3,
+                            pointRadius: 1
+                        },
+                        {
+                            label: 'Input Power (W)',
+                            data: inputPowers,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            yAxisID: 'y-power',
+                            tension: 0.3,
+                            pointRadius: 1
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
@@ -666,23 +842,51 @@
                         intersect: false,
                     },
                     scales: {
-                        y: {
+                        x: {
+                            title: { display: true, text: 'Time (s)' }
+                        },
+                        'y-rpm': {
                             type: 'linear',
                             display: true,
                             position: 'left',
-                            title: { display: true, text: 'Amps' }
+                            title: { display: true, text: 'RPM', color: '#007bff' },
+                            ticks: { color: '#007bff' }
                         },
-                        y1: {
+                        'y-current': {
                             type: 'linear',
                             display: true,
                             position: 'right',
-                            title: { display: true, text: 'RPM' },
+                            title: { display: true, text: 'Current (A)', color: '#ff6b9d' },
+                            ticks: { color: '#ff6b9d' },
                             grid: { drawOnChartArea: false }
                         },
-                        y2: {
+                        'y-voltage': {
                             type: 'linear',
                             display: false,
-                            position: 'right',
+                            position: 'right'
+                        },
+                        'y-power': {
+                            type: 'linear',
+                            display: false,
+                            position: 'right'
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toFixed(2);
+                                    return label;
+                                }
+                            }
                         }
                     }
                 }
@@ -706,7 +910,7 @@
                 
                 if (response.ok) {
                     alert('Motor deleted successfully.');
-                    window.location.href = '/motors';
+                    window.location.href = '/motors-page';
                 } else {
                     throw new Error('Failed to delete motor');
                 }

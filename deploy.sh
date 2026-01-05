@@ -39,6 +39,7 @@ sleep 15
 echo "🔄 Running database migrations..."
 docker-compose exec -T app python scripts/migrate_role_protected.py || true
 docker-compose exec -T app python scripts/migrate_name_optional.py || true
+docker-compose exec -T app python scripts/migrate_add_test_uuid.py || true
 
 echo ""
 echo "✅ Deployment complete!"

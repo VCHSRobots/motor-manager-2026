@@ -1,0 +1,30 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="#c44569"/>
+  
+  <!-- Motor body (cylinder) -->
+  <rect x="70" y="90" width="116" height="76" fill="#2c3e50" rx="8"/>
+  
+  <!-- Motor end caps -->
+  <ellipse cx="70" cy="128" rx="12" ry="38" fill="#34495e"/>
+  <ellipse cx="186" cy="128" rx="12" ry="38" fill="#1a252f"/>
+  
+  <!-- Motor shaft -->
+  <rect x="186" y="118" width="40" height="20" fill="#95a5a6"/>
+  <circle cx="226" cy="128" r="10" fill="#7f8c8d"/>
+  
+  <!-- Ventilation slots -->
+  <rect x="90" y="100" width="4" height="56" fill="#1a252f" opacity="0.5"/>
+  <rect x="105" y="100" width="4" height="56" fill="#1a252f" opacity="0.5"/>
+  <rect x="120" y="100" width="4" height="56" fill="#1a252f" opacity="0.5"/>
+  <rect x="135" y="100" width="4" height="56" fill="#1a252f" opacity="0.5"/>
+  <rect x="150" y="100" width="4" height="56" fill="#1a252f" opacity="0.5"/>
+  <rect x="165" y="100" width="4" height="56" fill="#1a252f" opacity="0.5"/>
+  
+  <!-- Mounting bracket -->
+  <rect x="115" y="166" width="26" height="35" fill="#34495e" rx="3"/>
+  <circle cx="128" cy="188" r="6" fill="#1a252f"/>
+  
+  <!-- Highlight for 3D effect -->
+  <ellipse cx="128" cy="100" rx="50" ry="8" fill="#ffffff" opacity="0.1"/>
+</svg>

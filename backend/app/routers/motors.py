@@ -184,10 +184,13 @@ def upload_test_data(
     # Save test data as compressed JSON
     test_data_json = {
         "test_date": test_data.test_date.isoformat(),
-        "max_rpm": test_data.max_rpm,
         "max_current": test_data.max_current,
         "gear_ratio": test_data.gear_ratio,
-        "flywheel_inertia": test_data.flywheel_inertia,
+        "spool_diameter": test_data.spool_diameter,
+        "weight_lbs": test_data.weight_lbs,
+        "lift_direction_cw": test_data.lift_direction_cw,
+        "max_lift_distance": test_data.max_lift_distance,
+        "distance_lifted": test_data.distance_lifted,
         "hardware_description": test_data.hardware_description,
         "data_points": [
             {
@@ -196,6 +199,7 @@ def upload_test_data(
                 "bus_voltage": dp.bus_voltage,
                 "current": dp.current,
                 "rpm": dp.rpm,
+                "distance": dp.distance,
                 "input_power": dp.input_power,
                 "output_power": dp.output_power
             }

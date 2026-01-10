@@ -84,6 +84,7 @@ class TestDataPoint(BaseModel):
     bus_voltage: float
     current: float
     rpm: float
+    distance: float = 0.0  # Distance lifted in inches
     input_power: float
     output_power: float
 
@@ -91,10 +92,14 @@ class TestDataPoint(BaseModel):
 class PerformanceTestCreate(BaseModel):
     test_uuid: str  # Client-generated UUID to prevent duplicate uploads
     test_date: datetime
-    max_rpm: float
     max_current: float
     gear_ratio: float
-    flywheel_inertia: float
+    # Weight lift test parameters
+    spool_diameter: float  # inches
+    weight_lbs: float  # pounds
+    lift_direction_cw: bool = True  # True = CW, False = CCW
+    max_lift_distance: float  # inches
+    distance_lifted: float  # actual distance lifted in inches
     hardware_description: Optional[str] = None
     avg_power_10a: Optional[float] = None
     avg_power_20a: Optional[float] = None

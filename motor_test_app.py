@@ -353,33 +353,57 @@ class SettingsDialog(tk.Toplevel):
         browse_btn = ttk.Button(folder_frame, text="Browse", command=self._browse_folder, width=8)
         browse_btn.pack(side=tk.LEFT, padx=(5, 0))
         
-        # Flywheel Moment of Inertia
-        ttk.Label(main_frame, text="Flywheel Moment of Inertia (kg·m²):", font=('Segoe UI', 10)).grid(
-            row=8, column=0, sticky="w", pady=(0, 5)
+        # === Weight Lift Test Hardware Settings ===
+        ttk.Separator(main_frame, orient='horizontal').grid(
+            row=8, column=0, columnspan=2, sticky="ew", pady=(0, 10)
         )
-        self.inertia_var = tk.StringVar()
-        inertia_entry = ttk.Entry(main_frame, textvariable=self.inertia_var, width=20)
-        inertia_entry.grid(row=9, column=0, sticky="w", pady=(0, 15))
+        ttk.Label(main_frame, text="Weight Lift Test Hardware", font=('Segoe UI', 10, 'bold')).grid(
+            row=9, column=0, sticky="w", pady=(0, 10)
+        )
         
-        # Gear Ratio
-        ttk.Label(main_frame, text="Gear Ratio (motor:flywheel):", font=('Segoe UI', 10)).grid(
-            row=10, column=0, sticky="w", pady=(0, 5)
-        )
+        # Row 10: Gear Ratio + Spool Diameter
+        row10_frame = ttk.Frame(main_frame)
+        row10_frame.grid(row=10, column=0, columnspan=2, sticky="ew", pady=(0, 10))
+        
+        ttk.Label(row10_frame, text="Gear Ratio:", font=('Segoe UI', 10)).pack(side=tk.LEFT)
         self.gear_ratio_var = tk.StringVar()
-        gear_ratio_entry = ttk.Entry(main_frame, textvariable=self.gear_ratio_var, width=20)
-        gear_ratio_entry.grid(row=11, column=0, sticky="w", pady=(0, 15))
+        ttk.Entry(row10_frame, textvariable=self.gear_ratio_var, width=8).pack(side=tk.LEFT, padx=(5, 20))
+        
+        ttk.Label(row10_frame, text="Spool Diameter (in):", font=('Segoe UI', 10)).pack(side=tk.LEFT)
+        self.spool_diameter_var = tk.StringVar()
+        ttk.Entry(row10_frame, textvariable=self.spool_diameter_var, width=8).pack(side=tk.LEFT, padx=(5, 0))
+        
+        # Row 11: Weight + Max Lift Distance
+        row11_frame = ttk.Frame(main_frame)
+        row11_frame.grid(row=11, column=0, columnspan=2, sticky="ew", pady=(0, 10))
+        
+        ttk.Label(row11_frame, text="Weight (lbs):", font=('Segoe UI', 10)).pack(side=tk.LEFT)
+        self.weight_lbs_var = tk.StringVar()
+        ttk.Entry(row11_frame, textvariable=self.weight_lbs_var, width=8).pack(side=tk.LEFT, padx=(5, 20))
+        
+        ttk.Label(row11_frame, text="Max Lift Distance (in):", font=('Segoe UI', 10)).pack(side=tk.LEFT)
+        self.max_lift_distance_var = tk.StringVar()
+        ttk.Entry(row11_frame, textvariable=self.max_lift_distance_var, width=8).pack(side=tk.LEFT, padx=(5, 0))
+        
+        # Row 12: Lift Direction (CW/CCW)
+        self.lift_direction_cw_var = tk.BooleanVar(value=True)
+        lift_dir_frame = ttk.Frame(main_frame)
+        lift_dir_frame.grid(row=12, column=0, columnspan=2, sticky="w", pady=(0, 15))
+        ttk.Label(lift_dir_frame, text="Lift Direction:", font=('Segoe UI', 10)).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Radiobutton(lift_dir_frame, text="CW", variable=self.lift_direction_cw_var, value=True).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Radiobutton(lift_dir_frame, text="CCW", variable=self.lift_direction_cw_var, value=False).pack(side=tk.LEFT)
         
         # Hardware Description
         ttk.Label(main_frame, text="Hardware Description:", font=('Segoe UI', 10)).grid(
-            row=12, column=0, sticky="w", pady=(0, 5)
+            row=13, column=0, sticky="w", pady=(0, 5)
         )
         self.hardware_desc_var = tk.StringVar()
         hardware_desc_entry = ttk.Entry(main_frame, textvariable=self.hardware_desc_var, width=50)
-        hardware_desc_entry.grid(row=13, column=0, columnspan=2, sticky="ew", pady=(0, 20))
+        hardware_desc_entry.grid(row=14, column=0, columnspan=2, sticky="ew", pady=(0, 20))
         
         # Buttons frame
         btn_frame = ttk.Frame(main_frame)
-        btn_frame.grid(row=14, column=0, columnspan=2, sticky="ew")
+        btn_frame.grid(row=15, column=0, columnspan=2, sticky="ew")
         
         test_btn = ttk.Button(btn_frame, text="Test Connection", 
                              command=self._test_connection)
@@ -399,8 +423,11 @@ class SettingsDialog(tk.Toplevel):
         self.username_var.set(self.current_settings.get('username', ''))
         self.password_var.set(self.current_settings.get('password', ''))
         self.output_folder_var.set(self.current_settings.get('output_folder', os.path.join(os.path.expanduser('~'), 'Documents', 'MotorTests')))
-        self.inertia_var.set(str(self.current_settings.get('flywheel_inertia', 0.0256)))
         self.gear_ratio_var.set(str(self.current_settings.get('gear_ratio', 1.0)))
+        self.spool_diameter_var.set(str(self.current_settings.get('spool_diameter', 2.0)))
+        self.weight_lbs_var.set(str(self.current_settings.get('weight_lbs', 5.0)))
+        self.lift_direction_cw_var.set(self.current_settings.get('lift_direction_cw', True))
+        self.max_lift_distance_var.set(str(self.current_settings.get('max_lift_distance', 18.0)))
         self.hardware_desc_var.set(self.current_settings.get('hardware_description', ''))
     
     def _browse_folder(self):
@@ -491,14 +518,6 @@ class SettingsDialog(tk.Toplevel):
         """Save settings and close"""
         # Validate numeric fields
         try:
-            inertia = float(self.inertia_var.get())
-            if inertia <= 0:
-                raise ValueError()
-        except ValueError:
-            messagebox.showerror("Error", "Flywheel inertia must be a positive number")
-            return
-        
-        try:
             gear_ratio = float(self.gear_ratio_var.get())
             if gear_ratio <= 0:
                 raise ValueError()
@@ -506,13 +525,40 @@ class SettingsDialog(tk.Toplevel):
             messagebox.showerror("Error", "Gear ratio must be a positive number")
             return
         
+        try:
+            spool_diameter = float(self.spool_diameter_var.get())
+            if spool_diameter <= 0:
+                raise ValueError()
+        except ValueError:
+            messagebox.showerror("Error", "Spool diameter must be a positive number")
+            return
+        
+        try:
+            weight_lbs = float(self.weight_lbs_var.get())
+            if weight_lbs <= 0:
+                raise ValueError()
+        except ValueError:
+            messagebox.showerror("Error", "Weight must be a positive number")
+            return
+        
+        try:
+            max_lift_distance = float(self.max_lift_distance_var.get())
+            if max_lift_distance <= 0:
+                raise ValueError()
+        except ValueError:
+            messagebox.showerror("Error", "Max lift distance must be a positive number")
+            return
+        
         self.result = {
             'server_url': self.url_var.get(),
             'username': self.username_var.get(),
             'password': self.password_var.get(),
             'output_folder': self.output_folder_var.get(),
-            'flywheel_inertia': inertia,
             'gear_ratio': gear_ratio,
+            'spool_diameter': spool_diameter,
+            'weight_lbs': weight_lbs,
+            'lift_direction_cw': self.lift_direction_cw_var.get(),
+            'max_lift_distance': max_lift_distance,
             'hardware_description': self.hardware_desc_var.get()
         }
         self.destroy()
@@ -549,6 +595,7 @@ class MotorTestApp(tk.Tk):
         self.graph_settings = {
             'RPM': {'visible': tk.BooleanVar(value=True), 'color': '#1f77b4', 'style': '-', 'width': 1.0},
             'Current': {'visible': tk.BooleanVar(value=True), 'color': '#ff7f0e', 'style': '-', 'width': 1.0},
+            'Distance': {'visible': tk.BooleanVar(value=True), 'color': '#e377c2', 'style': '-', 'width': 1.5},
             'Motor Voltage': {'visible': tk.BooleanVar(value=True), 'color': '#2ca02c', 'style': '-', 'width': 0.5},
             'Bus Voltage': {'visible': tk.BooleanVar(value=True), 'color': '#8c564b', 'style': '-', 'width': 0.5},
             'Input Power': {'visible': tk.BooleanVar(value=False), 'color': '#d62728', 'style': '-', 'width': 0.5},
@@ -589,8 +636,11 @@ class MotorTestApp(tk.Tk):
             'username': '',
             'password': '',
             'output_folder': os.path.join(os.path.expanduser('~'), 'Documents', 'MotorTests'),
-            'flywheel_inertia': 0.0256,
             'gear_ratio': 1.0,
+            'spool_diameter': 2.0,  # inches
+            'weight_lbs': 5.0,  # pounds
+            'lift_direction_cw': True,  # CW = True, CCW = False
+            'max_lift_distance': 18.0,  # inches
             'hardware_description': ''
         }
     
@@ -682,7 +732,7 @@ class MotorTestApp(tk.Tk):
         # Start periodic website polling (every 30 seconds)
         self._start_website_polling()    
     def _create_top_section(self, parent):
-        """Create top input section with Motor ID, Max Amps, Max RPM"""
+        """Create top input section with Motor ID and Max Amps"""
         
         top_frame = ttk.LabelFrame(parent, text="Test Parameters", padding="15")
         top_frame.grid(row=1, column=0, sticky="ew", padx=5, pady=5)
@@ -712,28 +762,16 @@ class MotorTestApp(tk.Tk):
                                       font=('Segoe UI', 11))
         max_amps_combo.grid(row=0, column=4, sticky="w", padx=(0, 30))
         
-        # Max RPM dropdown
-        ttk.Label(top_frame, text="Max RPM:", font=('Segoe UI', 11, 'bold')).grid(
-            row=0, column=5, sticky="w", padx=(0, 10)
-        )
-        self.max_rpm_var = tk.StringVar(value="1000")
-        max_rpm_combo = ttk.Combobox(top_frame, textvariable=self.max_rpm_var,
-                                     values=["250", "500", "1000", "2000", "2500", 
-                                           "3000", "4000", "5000", "6000"],
-                                     state="readonly", width=10,
-                                     font=('Segoe UI', 11))
-        max_rpm_combo.grid(row=0, column=6, sticky="w", padx=(0, 30))
-        
         # Add Motor button
         add_motor_btn = ttk.Button(top_frame, text="➕ Add Motor", 
                                    command=self._show_add_motor)
-        add_motor_btn.grid(row=0, column=7, sticky="e", padx=(30, 5))
+        add_motor_btn.grid(row=0, column=5, sticky="e", padx=(30, 5))
         
         # Setup button (upper right)
         setup_btn = ttk.Button(top_frame, text="⚙ Setup", command=self._show_settings)
-        setup_btn.grid(row=0, column=8, sticky="e", padx=(5, 0))
+        setup_btn.grid(row=0, column=6, sticky="e", padx=(5, 0))
         
-        top_frame.columnconfigure(7, weight=1)  # Push buttons to right
+        top_frame.columnconfigure(5, weight=1)  # Push buttons to right
     
     def _create_graph_section(self, parent):
         """Create middle section with large graph area and controls"""
@@ -922,6 +960,35 @@ class MotorTestApp(tk.Tk):
                                     cursor="hand2",
                                     state="disabled")
         self.upload_btn.pack(side="left", padx=10, expand=True, fill="x")
+        
+        # Separator for jog controls
+        ttk.Separator(bottom_frame, orient='vertical').pack(side="left", fill="y", padx=15)
+        
+        # Jog controls label
+        jog_label = ttk.Label(bottom_frame, text="Jog:", font=('Segoe UI', 11, 'bold'))
+        jog_label.pack(side="left", padx=(0, 5))
+        
+        # UP button (orange) - jog motor forward at 30 RPM while held
+        self.jog_up_btn = tk.Button(bottom_frame, text="▲ UP",
+                                    bg="#fd7e14", fg="white",
+                                    font=('Segoe UI', 12, 'bold'),
+                                    height=2, width=8,
+                                    cursor="hand2")
+        self.jog_up_btn.pack(side="left", padx=5)
+        # Bind press and release events for continuous jogging
+        self.jog_up_btn.bind('<ButtonPress-1>', lambda e: self._start_jog(30))
+        self.jog_up_btn.bind('<ButtonRelease-1>', lambda e: self._stop_jog())
+        
+        # DOWN button (purple) - jog motor reverse at 30 RPM while held
+        self.jog_down_btn = tk.Button(bottom_frame, text="▼ DOWN",
+                                      bg="#6f42c1", fg="white",
+                                      font=('Segoe UI', 12, 'bold'),
+                                      height=2, width=8,
+                                      cursor="hand2")
+        self.jog_down_btn.pack(side="left", padx=5)
+        # Bind press and release events for continuous jogging
+        self.jog_down_btn.bind('<ButtonPress-1>', lambda e: self._start_jog(-30))
+        self.jog_down_btn.bind('<ButtonRelease-1>', lambda e: self._stop_jog())
     
     def _show_settings(self):
         """Show settings dialog"""
@@ -931,7 +998,10 @@ class MotorTestApp(tk.Tk):
         if dialog.result:
             self.settings.update(dialog.result)
             self._save_settings()
-            messagebox.showinfo("Settings Saved", "Connection settings have been saved.")
+            # Reconnect hardware with new settings (including direction, gear ratio, etc.)
+            if self.motor_connected:
+                self._connect_hardware()
+            messagebox.showinfo("Settings Saved", "Settings have been saved.")
     
     def _show_add_motor(self):
         """Show add motor dialog"""
@@ -1197,15 +1267,11 @@ class MotorTestApp(tk.Tk):
         except ConnectionError:
             messagebox.showerror("Connection Error", 
                                f"Could not connect to server at {server_url}")
-        except Exception as e:
-            messagebox.showerror("Error", 
-                               f"An error occurred:\n\n{str(e)}")
     
     def _start_test(self):
-        """Start motor test"""
+        """Start motor test - weight lift test"""
         motor_id = self.motor_id_var.get()
         max_amps = float(self.max_amps_var.get())
-        max_rpm = float(self.max_rpm_var.get())
         
         # Check if motor controller is connected
         if not self.motor_connected or not self.motor_controller:
@@ -1231,42 +1297,44 @@ class MotorTestApp(tk.Tk):
         self.test_uuid = str(uuid.uuid4())  # Generate unique UUID for this test
         print(f"Generated test UUID: {self.test_uuid}")
         self.avg_power_label.config(text="")  # Clear average power display
-        self.test_max_rpm = max_rpm  # Store for graph scaling
         self.test_max_amps = max_amps  # Store for graph scaling
-        self.test_target_rpm = max_rpm  # Store for average power calculation
+        
+        # Get weight lift settings for display
+        max_lift_distance = self.settings.get('max_lift_distance', 18.0)
+        weight_lbs = self.settings.get('weight_lbs', 5.0)
         
         # Clear the graph
         self.ax.clear()
         self.ax.set_xlabel('Time (s)', fontsize=10)
         self.ax.set_ylabel('RPM', fontsize=10, color='blue')
         self.ax.tick_params(axis='y', labelcolor='blue')
-        self.ax.set_xlim(0, 10)  # 10 second time limit
-        self.ax.set_ylim(0, max_rpm * 1.1)  # 10% headroom
+        self.ax.set_xlim(0, 30)  # 30 second time limit for weight lift
+        self.ax.set_ylim(0, max_lift_distance * 1.1)  # 10% headroom on distance
         self.ax.grid(True, alpha=0.3)
         self.canvas.draw()
         
         # Display test info
         if motor_id:
-            print(f"Starting test for Motor ID: {motor_id}")
+            print(f"Starting weight lift test for Motor ID: {motor_id}")
         print(f"  Max Amps: {max_amps}")
-        print(f"  Max RPM: {max_rpm}")
+        print(f"  Weight: {weight_lbs} lbs")
+        print(f"  Max Distance: {max_lift_distance} inches")
         
         # Run the test in a separate thread to keep UI responsive
         import threading
         test_thread = threading.Thread(
             target=self._run_test_thread,
-            args=(motor_id, max_rpm, max_amps),
+            args=(motor_id, max_amps),
             daemon=True
         )
         test_thread.start()
     
-    def _run_test_thread(self, motor_id, max_rpm, max_amps):
+    def _run_test_thread(self, motor_id, max_amps):
         """Run the motor test in a separate thread"""
         try:
-            # Run the test with callback for real-time graph updates
+            # Run the weight lift test with callback for real-time graph updates
             result = self.motor_controller.run_test(
                 motor_id or "test",
-                max_rpm,
                 max_amps,
                 callback=self._update_graph_callback
             )
@@ -1308,6 +1376,7 @@ class MotorTestApp(tk.Tk):
         bus_voltages = [dp.bus_voltage for dp in data_points]
         input_powers = [dp.input_power for dp in data_points]
         output_powers = [dp.output_power for dp in data_points]
+        distances = [dp.distance for dp in data_points]
         
         # Clear the main axis
         self.ax.clear()
@@ -1325,6 +1394,7 @@ class MotorTestApp(tk.Tk):
         show_bus_voltage = self.graph_settings['Bus Voltage']['visible'].get()
         show_voltage = show_motor_voltage or show_bus_voltage
         show_rpm = self.graph_settings['RPM']['visible'].get()
+        show_distance = self.graph_settings['Distance']['visible'].get()
         show_power = (self.graph_settings['Input Power']['visible'].get() or 
                      self.graph_settings['Output Power']['visible'].get())
         
@@ -1336,6 +1406,7 @@ class MotorTestApp(tk.Tk):
         ax_current = None
         ax_voltage = None
         ax_rpm = None
+        ax_distance = None
         ax_power = None
         
         # Set up scales
@@ -1442,6 +1513,30 @@ class MotorTestApp(tk.Tk):
             ax_power.set_ylabel('Power (W)', fontsize=10, color='#d62728')
             ax_power.tick_params(axis='y', labelcolor='#d62728')
         
+        # Plot Distance on right side
+        if show_distance:
+            if not left_axes and not right_axes:
+                ax_distance = self.ax
+            else:
+                ax_distance = self.ax.twinx()
+            right_axes.append(ax_distance)
+            
+            # Position on right side
+            if len(right_axes) > 1:
+                ax_distance.spines['right'].set_position(('outward', 60 * (len(right_axes) - 1)))
+            
+            max_lift = self.settings.get('max_lift_distance', 18.0) * 1.1
+            ax_distance.set_ylim(0, max_lift)
+            
+            settings = self.graph_settings['Distance']
+            ax_distance.plot(times, distances,
+                           color=settings['color'],
+                           linestyle=settings['style'],
+                           linewidth=settings['width'],
+                           label='Distance (in)')
+            ax_distance.set_ylabel('Distance (in)', fontsize=10, color=settings['color'])
+            ax_distance.tick_params(axis='y', labelcolor=settings['color'])
+        
         # Configure X axis on the primary axis
         self.ax.set_xlabel('Time (s)', fontsize=10)
         
@@ -1457,11 +1552,18 @@ class MotorTestApp(tk.Tk):
         self.ax.grid(True, alpha=0.3)
         
         # If no measurements are visible, show a message
-        if not (show_current or show_voltage or show_rpm or show_power):
+        if not (show_current or show_voltage or show_rpm or show_distance or show_power):
             self.ax.text(0.5, 0.5, 'No measurements selected', 
                         ha='center', va='center', transform=self.ax.transAxes,
                         fontsize=14, color='gray')
             self.ax.set_ylabel('')
+            
+        # Display calculated average power if test is complete
+        if is_final and data_points and hasattr(self, 'test_results'):
+            avg_power = getattr(self.test_results, 'avg_power', None)
+            if avg_power is not None:
+                title_text = f"Calculated Avg Power: {avg_power:.1f} W (4\"-12\")"
+                self.ax.set_title(title_text, fontsize=12, fontweight='bold', color='#333333')
         
         self.canvas.draw()
     
@@ -1549,6 +1651,42 @@ class MotorTestApp(tk.Tk):
         self.is_testing = False
         self.start_btn.config(state="normal", bg="#28a745", cursor="hand2")
         self.stop_btn.config(state="disabled", bg="#8b4545", cursor="")
+    
+    def _start_jog(self, rpm):
+        """Start jogging the motor at specified RPM
+        
+        Args:
+            rpm: Target RPM (positive for up/forward, negative for down/reverse)
+        """
+        # Don't jog if a test is running
+        if self.is_testing:
+            return
+        
+        # Check if motor controller is connected
+        if not self.motor_connected or not self.motor_controller:
+            return
+        
+        # Store the jog RPM for continuous feeding
+        self._jog_rpm = rpm
+        
+        # Start jogging
+        if self.motor_controller.jog_motor(rpm):
+            self._jog_feed_enable()
+    
+    def _jog_feed_enable(self):
+        """Continuously feed the motor enable signal while jogging"""
+        if self.motor_controller and self.motor_controller.is_jogging and hasattr(self, '_jog_rpm'):
+            # Feed the enable signal by re-sending the jog command
+            self.motor_controller.jog_motor(self._jog_rpm)
+            # Schedule next feed in 50ms
+            self.after(50, self._jog_feed_enable)
+    
+    def _stop_jog(self):
+        """Stop jogging the motor"""
+        if hasattr(self, '_jog_rpm'):
+            del self._jog_rpm
+        if self.motor_controller:
+            self.motor_controller.stop_jog()
     
     def _save_csv(self):
         """Save test data to CSV file"""
@@ -1664,10 +1802,13 @@ class MotorTestApp(tk.Tk):
             test_data = {
                 "test_uuid": self.test_uuid,
                 "test_date": datetime.now().isoformat(),
-                "max_rpm": self.max_rpm_var.get(),
                 "max_current": self.max_amps_var.get(),
                 "gear_ratio": self.settings.get('gear_ratio', 1.0),
-                "flywheel_inertia": self.settings.get('flywheel_inertia', 0.0256),
+                "spool_diameter": self.settings.get('spool_diameter', 2.0),
+                "weight_lbs": self.settings.get('weight_lbs', 5.0),
+                "lift_direction_cw": self.settings.get('lift_direction_cw', True),
+                "max_lift_distance": self.settings.get('max_lift_distance', 18.0),
+                "distance_lifted": self.test_results.distance_lifted,
                 "hardware_description": self.settings.get('hardware_description', ''),
                 "avg_power_10a": None,
                 "avg_power_20a": None,
@@ -1683,17 +1824,18 @@ class MotorTestApp(tk.Tk):
                     "bus_voltage": dp.bus_voltage,
                     "current": dp.current,
                     "rpm": dp.rpm,
+                    "distance": dp.distance,
                     "input_power": dp.input_power,
                     "output_power": dp.output_power
                 })
             
             # Add average power for the current test
             max_current = int(self.max_amps_var.get())
-            avg_power = getattr(self, 'calculated_avg_power', None)
+            avg_power = self.test_results.avg_power  # Use avg_power from test result
             
             print(f"Debug - max_current: {max_current}, avg_power: {avg_power}")
             
-            if avg_power is not None:
+            if avg_power is not None and avg_power > 0:
                 if max_current == 10:
                     test_data["avg_power_10a"] = avg_power
                 elif max_current == 20:
@@ -1809,9 +1951,20 @@ class MotorTestApp(tk.Tk):
                 self.motor_status_label.config(text="No Motor Found", foreground='#dc3545')
                 return
             
-            # Create motor controller with specified device ID and gear ratio
+            # Create motor controller with specified device ID and weight lift settings
             gear_ratio = self.settings.get('gear_ratio', 1.0)
-            self.motor_controller = MotorTestController(talon_can_id=device_id, gear_ratio=gear_ratio)
+            spool_diameter = self.settings.get('spool_diameter', 2.0)
+            weight_lbs = self.settings.get('weight_lbs', 5.0)
+            lift_direction_cw = self.settings.get('lift_direction_cw', True)
+            max_lift_distance = self.settings.get('max_lift_distance', 18.0)
+            self.motor_controller = MotorTestController(
+                talon_can_id=device_id, 
+                gear_ratio=gear_ratio,
+                spool_diameter=spool_diameter,
+                weight_lbs=weight_lbs,
+                lift_direction_cw=lift_direction_cw,
+                max_lift_distance=max_lift_distance
+            )
             
             # Check if CANivore hardware is available
             self.canivore_connected = self.motor_controller.check_canivore_available()

@@ -32,6 +32,7 @@ ENV/
 # Application config
 motor_test_config.json
 uploaded_tests.json
+run_local.bat
 
 # IDE
 .vscode/

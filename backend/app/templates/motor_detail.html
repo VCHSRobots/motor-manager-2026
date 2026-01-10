@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,21 +12,21 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #ffe4e9;
             color: #333;
             line-height: 1.6;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
             color: white;
             padding: 1.5rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .header-content {
             max-width: 1200px;
             margin: 0 auto;
@@ -33,22 +34,22 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .header h1 {
             font-size: 1.8rem;
             font-weight: 600;
         }
-        
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-        
+
         .username {
             font-weight: 500;
         }
-        
+
         .btn {
             padding: 0.5rem 1rem;
             border: none;
@@ -59,63 +60,63 @@
             text-decoration: none;
             display: inline-block;
         }
-        
+
         .btn-primary {
             background-color: #fff;
             color: #c44569;
             font-weight: 600;
         }
-        
+
         .btn-primary:hover {
             background-color: #f0f0f0;
         }
-        
+
         .btn-secondary {
-            background-color: rgba(255,255,255,0.2);
+            background-color: rgba(255, 255, 255, 0.2);
             color: white;
             border: 1px solid white;
         }
-        
+
         .btn-success {
             background-color: #28a745;
             color: white;
         }
-        
+
         .btn-danger {
             background-color: #dc3545;
             color: white;
         }
-        
+
         .btn-small {
             padding: 0.3rem 0.6rem;
             font-size: 0.8rem;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 1rem auto;
             padding: 0 2rem;
         }
-        
+
         .card {
             background: white;
             border-radius: 10px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .card h2 {
             color: #c44569;
             margin-bottom: 1rem;
         }
-        
+
         .key-metrics {
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
         }
-        
+
         .metric-box {
             background: linear-gradient(135deg, #fff0f3 0%, #ffe4e9 100%);
             padding: 0.5rem 0.75rem;
@@ -123,50 +124,54 @@
             text-align: center;
             min-width: 110px;
         }
-        
+
         .metric-label {
             font-size: 0.75rem;
             color: #666;
             margin-bottom: 0.25rem;
         }
-        
+
         .metric-value {
             font-size: 1.2rem;
             font-weight: 600;
             color: #c44569;
         }
-        
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
         }
-        
+
         .form-group {
             margin-bottom: 1rem;
         }
-        
+
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: #555;
         }
-        
-        input, select, textarea {
+
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 0.5rem;
             border: 1px solid #ffb3c6;
             border-radius: 5px;
             font-family: inherit;
         }
-        
-        input:focus, select:focus, textarea:focus {
+
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: #c44569;
             box-shadow: 0 0 0 3px rgba(196, 69, 105, 0.1);
         }
-        
+
         .status-badge {
             padding: 0.5rem 1rem;
             border-radius: 4px;
@@ -174,13 +179,32 @@
             font-weight: 500;
             display: inline-block;
         }
-        
-        .status-on-order { background-color: #ffeaa7; color: #6c5ce7; }
-        .status-available { background-color: #55efc4; color: #00b894; }
-        .status-in-service { background-color: #74b9ff; color: #0984e3; }
-        .status-retired { background-color: #dfe6e9; color: #636e72; }
-        .status-damaged { background-color: #ff7675; color: #d63031; }
-        
+
+        .status-on-order {
+            background-color: #ffeaa7;
+            color: #6c5ce7;
+        }
+
+        .status-available {
+            background-color: #55efc4;
+            color: #00b894;
+        }
+
+        .status-in-service {
+            background-color: #74b9ff;
+            color: #0984e3;
+        }
+
+        .status-retired {
+            background-color: #dfe6e9;
+            color: #636e72;
+        }
+
+        .status-damaged {
+            background-color: #ff7675;
+            color: #d63031;
+        }
+
         .log-entry {
             border-left: 3px solid #ffb3c6;
             padding: 1rem;
@@ -188,24 +212,24 @@
             background-color: #fff0f3;
             border-radius: 4px;
         }
-        
+
         .log-date {
             font-size: 0.85rem;
             color: #666;
             margin-bottom: 0.5rem;
         }
-        
+
         .log-text {
             color: #333;
         }
-        
+
         .motor-picture {
             max-width: 200px;
             max-height: 200px;
             border-radius: 8px;
             object-fit: cover;
         }
-        
+
         .no-picture {
             width: 200px;
             height: 150px;
@@ -217,45 +241,45 @@
             color: #999;
             font-size: 0.85rem;
         }
-        
+
         .motor-header-layout {
             display: grid;
             grid-template-columns: 1fr auto;
             gap: 2rem;
             align-items: start;
         }
-        
+
         .motor-info-section {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
-        
+
         .motor-top-row {
             display: flex;
             justify-content: space-between;
             align-items: start;
         }
-        
+
         .motor-picture-section {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
             align-items: center;
         }
-        
+
         .chart-container {
             position: relative;
             height: 400px;
             margin-top: 1rem;
         }
-        
+
         .loading {
             text-align: center;
             padding: 2rem;
             color: #c44569;
         }
-        
+
         .back-link {
             color: #c44569;
             text-decoration: none;
@@ -263,33 +287,36 @@
             display: inline-block;
             font-size: 0.9rem;
         }
-        
+
         .back-link:hover {
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="header-content">
             <h1>
-                <img src="/static/images/epic_logo.png" style="height: 40px; vertical-align: middle; margin-right: 10px;" alt="EPIC Robotz Logo">
+                <img src="/static/images/epic_logo.png"
+                    style="height: 40px; vertical-align: middle; margin-right: 10px;" alt="EPIC Robotz Logo">
                 EPIC Robotz Motor Management System
             </h1>
             <div class="user-info">
                 <span class="username" id="displayUsername"></span>
-                <button class="btn btn-secondary" id="setupBtn" style="display:none;" onclick="window.location.href='/manage-users'">Setup</button>
+                <button class="btn btn-secondary" id="setupBtn" style="display:none;"
+                    onclick="window.location.href='/manage-users'">Setup</button>
                 <button class="btn btn-primary" onclick="logout()">Logout</button>
             </div>
         </div>
     </div>
-    
+
     <div class="container">
         <a href="/motors-page" class="back-link">← Back to Motors</a>
-        
+
         <div id="motorContent" class="loading">Loading motor details...</div>
     </div>
-    
+
     <script src="/static/js/auth-utils.js"></script>
     <script>
         const authToken = localStorage.getItem('auth_token');
@@ -298,48 +325,48 @@
         const motorId = window.location.pathname.split('/').pop();
         const isNewMotor = motorId === 'new';
         let motorIdString = null;  // Will store motor_id like "2026-001"
-        
+
         if (!authToken) {
             window.location.href = '/';
         }
-        
+
         document.getElementById('displayUsername').textContent = username || 'User';
-        
+
         if (role === 'admin') {
             document.getElementById('setupBtn').style.display = 'inline-block';
         }
-        
+
         async function loadMotor() {
             if (isNewMotor) {
                 renderNewMotorForm();
                 return;
             }
-            
+
             try {
                 const response = await authFetch(`/motors/${motorId}`);
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to load motor');
                 }
-                
+
                 const motor = await response.json();
                 motorIdString = motor.motor_id;  // Store motor_id string for API calls
                 renderMotor(motor);
             } catch (error) {
                 console.error('Error loading motor:', error);
-                document.getElementById('motorContent').innerHTML = 
+                document.getElementById('motorContent').innerHTML =
                     '<div class="card">Error loading motor details.</div>';
             }
         }
-        
+
         function renderNewMotorForm() {
             const content = document.getElementById('motorContent');
-            
+
             // Generate date options (seasons from Fall 2024 to current)
             const dateOptions = [];
             const currentYear = 2026;
             const currentMonth = 1; // January
-            
+
             for (let year = 2024; year <= currentYear; year++) {
                 const seasons = ['Winter', 'Spring', 'Summer', 'Fall'];
                 for (let season of seasons) {
@@ -348,9 +375,9 @@
                     dateOptions.push(`${season} ${year}`);
                 }
             }
-            
+
             const dateOptionsHtml = dateOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('');
-            
+
             content.innerHTML = `
                 <div class="card">
                     <h2>Add New Motor</h2>
@@ -415,11 +442,11 @@
                 </div>
             `;
         }
-        
+
         function toggleCustomType() {
             const select = document.getElementById('motorTypeSelect');
             const customInput = document.getElementById('customTypeInput');
-            
+
             if (select.value === 'Other') {
                 customInput.style.display = 'block';
                 customInput.required = true;
@@ -429,11 +456,11 @@
                 customInput.value = '';
             }
         }
-        
+
         function toggleDateInput() {
             const select = document.getElementById('purchaseOptionSelect');
             const dateInput = document.getElementById('specificDateInput');
-            
+
             if (select.value === 'specific') {
                 dateInput.style.display = 'block';
                 dateInput.required = true;
@@ -443,11 +470,11 @@
                 dateInput.value = '';
             }
         }
-        
+
         function renderMotor(motor) {
             const statusClass = motor.status ? 'status-' + motor.status.toLowerCase().replace(' ', '-') : '';
             const purchaseDate = formatPurchaseDate(motor);
-            
+
             const content = document.getElementById('motorContent');
             content.innerHTML = `
                 <div class="card">
@@ -483,10 +510,10 @@
                             </div>
                         </div>
                         <div class="motor-picture-section">
-                            ${motor.picture_path ? 
-                                `<img src="${motor.picture_path}" class="motor-picture" alt="${motor.name}">` : 
-                                '<div class="no-picture">No picture</div>'
-                            }
+                            ${motor.picture_path ?
+                    `<img src="${motor.picture_path}" class="motor-picture" alt="${motor.name}">` :
+                    '<div class="no-picture">No picture</div>'
+                }
                             <input type="file" id="pictureUpload" accept="image/*" style="display: none;" onchange="uploadPicture()">
                             <button class="btn btn-primary btn-small" onclick="document.getElementById('pictureUpload').click()">Upload</button>
                         </div>
@@ -509,11 +536,11 @@
                     </div>
                 </div>
             `;
-            
+
             loadLogEntries();
             loadPerformanceTests();
         }
-        
+
         function formatPurchaseDate(motor) {
             if (motor.date_of_purchase) {
                 return new Date(motor.date_of_purchase).toLocaleDateString();
@@ -522,12 +549,12 @@
             }
             return 'N/A';
         }
-        
+
         async function saveMotor(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = {};
-            
+
             // Handle motor type (REQUIRED)
             const motorType = formData.get('motor_type');
             if (motorType === 'Other') {
@@ -543,7 +570,7 @@
                 alert('Please select a motor type');
                 return;
             }
-            
+
             // Handle date of purchase
             const purchaseOption = formData.get('purchase_option');
             if (purchaseOption === 'specific') {
@@ -559,21 +586,21 @@
                     data.purchase_year = parseInt(parts[1]);
                 }
             }
-            
+
             // Add optional nickname
             const name = formData.get('name');
             if (name && name.trim()) {
                 data.name = name.trim();
             }
-            
+
             // Add status (with default)
             data.status = formData.get('status') || 'On Order';
-            
+
             // Get initial comment (if provided)
             const initialComment = formData.get('initial_comment');
-            
+
             console.log('Sending motor data:', data);
-            
+
             try {
                 const response = await authFetch('/motors', {
                     method: 'POST',
@@ -582,15 +609,15 @@
                     },
                     body: JSON.stringify(data)
                 });
-                
+
                 if (!response.ok) {
                     const errorData = await response.text();
                     console.error('Server response:', response.status, errorData);
                     throw new Error(`Failed to create motor: ${response.status} - ${errorData}`);
                 }
-                
+
                 const motor = await response.json();
-                
+
                 // If there's an initial comment, create a log entry
                 if (initialComment && initialComment.trim()) {
                     try {
@@ -606,27 +633,27 @@
                         // Don't fail the motor creation if log fails
                     }
                 }
-                
+
                 window.location.href = `/motor/${motor.id}`;
             } catch (error) {
                 console.error('Error saving motor:', error);
                 alert('Error saving motor: ' + error.message);
             }
         }
-        
+
         async function loadLogEntries() {
             try {
                 const response = await authFetch(`/motors/${motorId}/logs`);
-                
+
                 if (response.ok) {
                     const logs = await response.json();
                     const logsDiv = document.getElementById('logEntries');
-                    
+
                     if (logs.length === 0) {
                         logsDiv.innerHTML = '<p style="color: #999;">No log entries yet.</p>';
                         return;
                     }
-                    
+
                     logsDiv.innerHTML = logs.map(log => `
                         <div class="log-entry">
                             <div class="log-date">${new Date(log.created_at).toLocaleString()}</div>
@@ -638,11 +665,11 @@
                 console.error('Error loading log entries:', error);
             }
         }
-        
+
         async function addLogEntry() {
             const text = document.getElementById('newLogEntry').value.trim();
             if (!text) return;
-            
+
             try {
                 const response = await authFetch(`/motors/${motorId}/logs`, {
                     method: 'POST',
@@ -651,7 +678,7 @@
                     },
                     body: JSON.stringify({ entry_text: text })
                 });
-                
+
                 if (response.ok) {
                     document.getElementById('newLogEntry').value = '';
                     loadLogEntries();
@@ -661,29 +688,29 @@
                 alert('Error adding log entry.');
             }
         }
-        
+
         async function loadPerformanceTests() {
             try {
                 const response = await authFetch(`/motors/${motorIdString}/tests`);
-                
+
                 if (!response.ok) {
                     console.error('Failed to load tests:', response.status);
-                    document.getElementById('testsSection').innerHTML = 
+                    document.getElementById('testsSection').innerHTML =
                         '<p style="color: #999;">No test data available yet.</p>';
                     return;
                 }
-                
+
                 const tests = await response.json();
                 const testsSection = document.getElementById('testsSection');
-                
+
                 if (tests.length === 0) {
                     testsSection.innerHTML = '<p style="color: #999;">No test data uploaded yet.</p>';
                     return;
                 }
-                
+
                 // Display most recent test
                 const latestTest = tests[0];
-                
+
                 testsSection.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
                         <label for="testSelect" style="font-weight: 600; margin: 0;">Test:</label>
@@ -705,30 +732,30 @@
                         <canvas id="performanceChart"></canvas>
                     </div>
                 `;
-                
+
                 // Load the latest test data by default
                 loadTestData(latestTest.id);
-                
+
             } catch (error) {
                 console.error('Error loading tests:', error);
-                document.getElementById('testsSection').innerHTML = 
+                document.getElementById('testsSection').innerHTML =
                     '<p style="color: #f00;">Error loading test data.</p>';
             }
         }
-        
+
         let currentChart = null;
-        
+
         async function loadTestData(testId) {
             try {
                 const response = await authFetch(`/motors/${motorIdString}/tests/${testId}/data`);
-                
+
                 if (!response.ok) {
                     console.error('Failed to load test data:', response.status);
                     return;
                 }
-                
+
                 const testData = await response.json();
-                
+
                 // Display metadata
                 const metadataDiv = document.getElementById('testMetadata');
                 metadataDiv.innerHTML = `
@@ -738,16 +765,19 @@
                                 <strong>Date:</strong> ${new Date(testData.test_date).toLocaleString()}
                             </div>
                             <div>
-                                <strong>Max RPM:</strong> ${testData.max_rpm}
+                                <strong>Weight:</strong> ${testData.weight_lbs || 'N/A'} lbs
+                            </div>
+                            <div>
+                                <strong>Distance:</strong> ${testData.distance_lifted ? testData.distance_lifted.toFixed(1) : 'N/A'}"
                             </div>
                             <div>
                                 <strong>Max Current:</strong> ${testData.max_current}A
                             </div>
                             <div>
-                                <strong>Gear:</strong> ${testData.gear_ratio}
+                                <strong>Spool:</strong> ${testData.spool_diameter || 'N/A'}"
                             </div>
                             <div>
-                                <strong>Inertia:</strong> ${testData.flywheel_inertia}
+                                <strong>Gear:</strong> ${testData.gear_ratio}
                             </div>
                             ${testData.avg_power_10a || testData.avg_power_20a || testData.avg_power_40a ? `
                                 <div style="border-left: 2px solid #c44569; padding-left: 1rem;">
@@ -765,23 +795,23 @@
                         ` : ''}
                     </div>
                 `;
-                
+
                 // Plot the graph
                 plotTestData(testData.data_points);
-                
+
             } catch (error) {
                 console.error('Error loading test data:', error);
             }
         }
-        
+
         function plotTestData(dataPoints) {
             const ctx = document.getElementById('performanceChart').getContext('2d');
-            
+
             // Destroy existing chart if it exists
             if (currentChart) {
                 currentChart.destroy();
             }
-            
+
             // Extract data arrays
             const timestamps = dataPoints.map(dp => dp.timestamp.toFixed(2));
             const rpms = dataPoints.map(dp => dp.rpm);
@@ -790,7 +820,8 @@
             const busVoltages = dataPoints.map(dp => dp.bus_voltage);
             const inputPowers = dataPoints.map(dp => dp.input_power);
             const outputPowers = dataPoints.map(dp => dp.output_power);
-            
+            const distances = dataPoints.map(dp => dp.distance || 0);
+
             currentChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -830,8 +861,28 @@
                             backgroundColor: 'rgba(255, 193, 7, 0.1)',
                             yAxisID: 'y-power',
                             tension: 0.3,
+                            pointRadius: 1,
+                            hidden: true
+                        },
+                        {
+                            label: 'Output Power (W)',
+                            data: outputPowers,
+                            borderColor: '#9467bd',
+                            backgroundColor: 'rgba(148, 103, 189, 0.1)',
+                            yAxisID: 'y-power',
+                            tension: 0.3,
+                            pointRadius: 1
+                        },
+                        {
+                            label: 'Distance (in)',
+                            data: distances,
+                            borderColor: '#e377c2',
+                            backgroundColor: 'rgba(227, 119, 194, 0.1)',
+                            yAxisID: 'y-distance',
+                            tension: 0.3,
                             pointRadius: 1
                         }
+
                     ]
                 },
                 options: {
@@ -867,8 +918,19 @@
                         },
                         'y-power': {
                             type: 'linear',
-                            display: false,
-                            position: 'right'
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Power (W)', color: '#9467bd' },
+                            ticks: { color: '#9467bd' },
+                            grid: { drawOnChartArea: false }
+                        },
+                        'y-distance': {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Distance (in)', color: '#e377c2' },
+                            ticks: { color: '#e377c2' },
+                            grid: { drawOnChartArea: false }
                         }
                     },
                     plugins: {
@@ -878,7 +940,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     let label = context.dataset.label || '';
                                     if (label) {
                                         label += ': ';
@@ -892,22 +954,22 @@
                 }
             });
         }
-        
+
         function editMotor() {
             // TODO: Implement edit functionality
             alert('Edit functionality coming soon!');
         }
-        
+
         async function deleteMotor() {
             if (!confirm('Are you sure you want to delete this motor? This action cannot be undone.')) {
                 return;
             }
-            
+
             try {
                 const response = await authFetch(`/motors/${motorId}`, {
                     method: 'DELETE'
                 });
-                
+
                 if (response.ok) {
                     alert('Motor deleted successfully.');
                     window.location.href = '/motors-page';
@@ -919,40 +981,41 @@
                 alert('Error deleting motor.');
             }
         }
-        
+
         function uploadPicture() {
             const fileInput = document.getElementById('pictureUpload');
             const file = fileInput.files[0];
-            
+
             if (!file) return;
-            
+
             const formData = new FormData();
             formData.append('file', file);
-            
+
             authFetch(`/motors/${motorId}/upload-picture`, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (response.ok) {
-                    alert('Picture uploaded successfully!');
-                    loadMotor(); // Reload to show new picture
-                } else {
-                    throw new Error('Failed to upload picture');
-                }
-            })
-            .catch(error => {
-                console.error('Error uploading picture:', error);
-                alert('Error uploading picture.');
-            });
+                .then(response => {
+                    if (response.ok) {
+                        alert('Picture uploaded successfully!');
+                        loadMotor(); // Reload to show new picture
+                    } else {
+                        throw new Error('Failed to upload picture');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading picture:', error);
+                    alert('Error uploading picture.');
+                });
         }
-        
+
         function uploadPerformanceData() {
             // TODO: Implement performance data upload
             alert('Performance data upload functionality coming soon!');
         }
-        
+
         loadMotor();
     </script>
 </body>
+
 </html>
